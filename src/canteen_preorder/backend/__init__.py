@@ -160,3 +160,6 @@ class PreorderBackend:
         order_id: int = res.fetchone()[0]
         self.db.commit()
         return self.__order((order_id, user_id, order_time, items_str))
+
+class BackendException(Exception):
+    pass
