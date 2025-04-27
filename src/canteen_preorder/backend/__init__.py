@@ -55,7 +55,13 @@ class PreorderBackend:
         pass
 
     def create_user(self, name: str, email: str, password: str, staff: bool = False) -> User:
-        pass
+        cur = self.db.cursor()
+        password_hash = self.hasher.hash(password)
+        cur.execute("insert into users (name, email, password, staff) values (?, ?, ?, ?)", name, email, password_hash, staff if 1 else 0)
+        res = cur.execute("select id from users where email = ?", email)
+        user_id: int = res.fetchone()[0]
+        self.db.commit()
+        return self.get_user(user_id)
     
     # MEALS
     def get_meals(self) -> list[Meal]:
