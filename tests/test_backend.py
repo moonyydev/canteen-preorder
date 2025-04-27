@@ -29,6 +29,13 @@ def test_backend_create_user_twice():
     with pytest.raises(sqlite3.IntegrityError):
         backend.create_user("test_user", "test_user@gmail.com", "differentpass", False)
 
+def test_backend_wrong_login():
+    backend = testing_backend()
+    user_testing_collection(backend)
+    assert backend.login("thisemaildoesntexist@gmail.com", "nordoesthispassword") is None
+    assert backend.login("userthethird@gmail.com", "nordoesthispassword") is None
+    assert backend.login("thisemaildoesntexisteither@gmail.com", "test123pass") is None
+
 def test_backend_create_and_get_users():
     backend = testing_backend()
     users = user_testing_collection(backend)
