@@ -114,13 +114,19 @@ class PreorderBackend:
         return self.__meal(res.fetchone())
 
     def update_meal_stock(self, meal_id: Id, stock: int) -> None:
-        pass
+        cur = self.db.cursor()
+        cur.execute("update meals set stock = ? where id = ?", stock, meal_id)
+        self.db.commit()
 
     def update_meal_cost(self, meal_id: Id, cost: Cost) -> None:
-        pass
+        cur = self.db.cursor()
+        cur.execute("update meals set cost = ? where id = ?", cost, meal_id)
+        self.db.commit()
     
     def update_meal_availability(self, meal_id: Id, available: bool = False) -> None:
-        pass
+        cur = self.db.cursor()
+        cur.execute("update meals set availability = ? where id = ?", available if 1 else 0, meal_id)
+        self.db.commit()
 
     # ORDERS
     def get_orders(self) -> list[Order]:
