@@ -15,15 +15,20 @@ class PreorderBackend:
             password text not null,
             staff int
         );
+        """)
 
+        cur.execute("""
         create table if not exists meals (
             id int primary key,
             name text not null unique,
             cost int not null,
             category int not null,
-            stock int not null
+            stock int not null,
+            available int not null
         );
+        """)
 
+        cur.execute("""
         create table if not exists orders (
             id int primary key,
             user int not null,
@@ -31,4 +36,5 @@ class PreorderBackend:
             data text not null
         );
         """)
+
         self.db.commit()
