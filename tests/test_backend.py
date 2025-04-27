@@ -95,3 +95,10 @@ def test_backend_get_orders():
     user_testing_collection(backend)
     orders = order_testing_collection(backend)
     assert orders == backend.get_orders()
+
+def test_backend_get_order():
+    backend = testing_backend()
+    user_testing_collection(backend)
+    order1 = order_testing_collection(backend)[1]
+    order2 = backend.get_order(order1.order_id)
+    assert order1 == order2
