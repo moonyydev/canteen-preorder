@@ -3,5 +3,17 @@ name = "canteen-preorder"
 version = "0.1.0"
 description = "School Canteen Pre-Order System"
 readme = "README.md"
+authors = [
+    { name = "Oskar Kowalik", email = "oskar.kowalik@cischool.edu.pl" },
+    { name = "Anastasiia Romanenko", email = "anastasiia.romanenko@cischool.edu.pl" },
+    { name = "Shreya Srivastava", email = "shreya.srivastava@cischool.edu.pl" }
+]
 requires-python = ">=3.13"
 dependencies = []
+
+[project.scripts]
+canteen-preorder = "canteen_preorder:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
