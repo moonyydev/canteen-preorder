@@ -17,7 +17,7 @@ def user_testing_collection(backend: PreorderBackend) -> list[User]:
     users.append(backend.create_user("userV", "fifthuser@gmail.com", "unexpectedpassword", False))
     return users
 
-def test_backend_create_and_login_user():
+def test_backend_login_user():
     backend = testing_backend()
     user1 = user_testing_collection(backend)[0]
     user2 = backend.login("test_user@gmail.com", "test123pass")
@@ -36,7 +36,7 @@ def test_backend_wrong_login():
     assert backend.login("userthethird@gmail.com", "nordoesthispassword") is None
     assert backend.login("thisemaildoesntexisteither@gmail.com", "test123pass") is None
 
-def test_backend_create_and_get_users():
+def test_backend_get_users():
     backend = testing_backend()
     users = user_testing_collection(backend)
     assert users == backend.get_users()
