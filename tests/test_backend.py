@@ -48,3 +48,9 @@ def test_backend_get_meals():
     backend = testing_backend()
     meals = meal_testing_collection(backend)
     assert meals == backend.get_meals()
+
+def test_backend_get_meal():
+    backend = testing_backend()
+    meal1 = meal_testing_collection(backend)[2]
+    meal2 = backend.get_meal(meal1.meal_id)
+    assert meal1 == meal2
