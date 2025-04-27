@@ -1,6 +1,7 @@
 import pytest
 from sqlite3 import DatabaseError
 from canteen_preorder.backend import PreorderBackend
+from canteen_preorder.common import Category
 
 def test_backend_init():
     PreorderBackend(":memory:")
@@ -37,3 +38,11 @@ def test_backend_get_user():
     backend.create_user("userV", "fifthuser@gmail.com", "unexpectedpassword", False)
     user2 = backend.get_user(user1.user_id)
     assert user1 == user2
+
+
+def test_backend_create_meal():
+    backend = PreorderBackend(":memory:")
+    backend.create_meal("Fruit Salad", 820, Category.SNACK, 2)
+    backend.create_meal("Turkey Sandwich", 650, Category.LUNCH, 5)
+    backend.create_meal("Chicken Sandwich", 670, Category.LUNCH, 1)
+    backend.create_meal("Vegeterian Sandwich", 710, Category.LUNCH, 8)
