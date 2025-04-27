@@ -106,8 +106,12 @@ class PreorderBackend:
         return self.__meal(data)
 
     # Staff Only
-    def create_meal(self, name: str, cost: Cost, category: int, stock: int, available: bool = True) -> Meal:
-        pass
+    def create_meal(self, name: str, cost: Cost, category: Category, stock: int, available: bool = True) -> Meal:
+        cur = self.db.cursor()
+        cur.execute("insert into meals (name, cost, category, stock, available) values (?, ?, ?, ?, ?)", name, cost, category.value, stock, available if 1 else 0)
+        res = cur.execute("select id, name, cost, category, stock, available from meals where name = ?", name)
+        self.db.commit()
+        return self.__meal(res.fetchone())
 
     def update_meal_stock(self, meal_id: Id, stock: int) -> None:
         pass
