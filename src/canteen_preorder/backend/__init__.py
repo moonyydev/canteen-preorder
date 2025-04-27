@@ -65,7 +65,7 @@ class PreorderBackend:
     
     def get_user(self, user_id: Id) -> Optional[User]:
         cur = self.db.cursor()
-        res = cur.execute("select id, name, email, staff from users where id = ?", user_id)
+        res = cur.execute("select id, name, email, staff from users where id = ?", (user_id))
         self.db.commit()
         data = res.fetchone()
         if data is None:
@@ -82,7 +82,7 @@ class PreorderBackend:
     def create_user(self, name: str, email: str, password: str, staff: bool = False) -> User:
         cur = self.db.cursor()
         password_hash = self.hasher.hash(password)
-        res = cur.execute("insert into users (name, email, password, staff) values (?, ?, ?, ?) returning id, name, email, staff", name, email, password_hash, staff if 1 else 0)
+        res = cur.execute("insert into users (name, email, password, staff) values (?, ?, ?, ?) returning id, name, email, staff", (name, email, password_hash, staff if 1 else 0))
         self.db.commit()
         return self.__user(res.fetchone())
     
@@ -98,7 +98,7 @@ class PreorderBackend:
 
     def get_meal(self, meal_id: Id) -> Optional[Meal]:
         cur = self.db.cursor()
-        res = cur.execute("select id, name, cost, category, stock, available from meals where id = ?", meal_id)
+        res = cur.execute("select id, name, cost, category, stock, available from meals where id = ?", (meal_id))
         self.db.commit()
         data = res.fetchone()
         if data is None:
@@ -108,23 +108,23 @@ class PreorderBackend:
     # Staff Only
     def create_meal(self, name: str, cost: Cost, category: Category, stock: int, available: bool = True) -> Meal:
         cur = self.db.cursor()
-        res = cur.execute("insert into meals (name, cost, category, stock, available) values (?, ?, ?, ?, ?) returning *", name, cost, category.value, stock, available if 1 else 0)
+        res = cur.execute("insert into meals (name, cost, category, stock, available) values (?, ?, ?, ?, ?) returning *", (name, cost, category.value, stock, available if 1 else 0))
         self.db.commit()
         return self.__meal(res.fetchone())
 
     def update_meal_stock(self, meal_id: Id, stock: int) -> None:
         cur = self.db.cursor()
-        cur.execute("update meals set stock = ? where id = ?", stock, meal_id)
+        cur.execute("update meals set stock = ? where id = ?", (stock, meal_id))
         self.db.commit()
 
     def update_meal_cost(self, meal_id: Id, cost: Cost) -> None:
         cur = self.db.cursor()
-        cur.execute("update meals set cost = ? where id = ?", cost, meal_id)
+        cur.execute("update meals set cost = ? where id = ?", (cost, meal_id))
         self.db.commit()
     
     def update_meal_availability(self, meal_id: Id, available: bool = False) -> None:
         cur = self.db.cursor()
-        cur.execute("update meals set availability = ? where id = ?", available if 1 else 0, meal_id)
+        cur.execute("update meals set availability = ? where id = ?", (available if 1 else 0, meal_id))
         self.db.commit()
 
     # ORDERS
@@ -140,7 +140,7 @@ class PreorderBackend:
     
     def get_order(self, order_id: Id) -> Optional[Order]:
         cur = self.db.cursor()
-        res = cur.execute("select id, user, order_time, data from orders where id = ?", order_id)
+        res = cur.execute("select id, user, order_time, data from orders where id = ?", (order_id))
         self.db.commit()
         data = res.fetchone()
         if data is None:
@@ -151,7 +151,7 @@ class PreorderBackend:
         items_str = json.dumps(items)
         order_time = int(time.time())
         cur = self.db.cursor()
-        res = cur.execute("insert into orders (user, order_time, data) values (?, ?, ?) returning id", user_id, order_time, items_str)
+        res = cur.execute("insert into orders (user, order_time, data) values (?, ?, ?) returning id", (user_id, order_time, items_str))
         self.db.commit()
         order_id: int = res.fetchone()[0]
         return self.__order((order_id, user_id, order_time, items_str))
