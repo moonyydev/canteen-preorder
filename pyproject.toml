@@ -13,6 +13,7 @@ dependencies = []
 
 [project.scripts]
 canteen-preorder = "canteen_preorder:main"
+main = "canteen_preorder:main"
 
 [build-system]
 requires = ["hatchling"]
