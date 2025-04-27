@@ -13,30 +13,30 @@ class PreorderBackend:
         cur = self.db.cursor()
         cur.execute("""
         create table if not exists users (
-            id int primary key autoincrement,
+            id integer primary key autoincrement,
             name text not null,
             email text not null unique,
             password text not null,
-            staff int
+            staff integer
         );
         """)
 
         cur.execute("""
         create table if not exists meals (
-            id int primary key autoincrement,
+            id integer primary key autoincrement,
             name text not null unique,
-            cost int not null,
-            category int not null,
-            stock int not null,
-            available int not null
+            cost integer not null,
+            category integer not null,
+            stock integer not null,
+            available integer not null
         );
         """)
 
         cur.execute("""
         create table if not exists orders (
-            id int primary key autoincrement,
-            user int not null,
-            order_time int not null,
+            id integer primary key autoincrement,
+            user integer not null,
+            order_time integer not null,
             data text not null
         );
         """)
