@@ -98,7 +98,7 @@ class PreorderBackend:
 
     def get_meal(self, meal_id: Id) -> Optional[Meal]:
         cur = self.db.cursor()
-        res = cur.execute("select id, name, cost, category, stock from meals where id = ?", meal_id)
+        res = cur.execute("select id, name, cost, category, stock, available from meals where id = ?", meal_id)
         self.db.commit()
         data = res.fetchone()
         if data is None:
