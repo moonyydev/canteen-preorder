@@ -1,3 +1,5 @@
+import pytest
+import sqlite3
 from canteen_preorder.backend import PreorderBackend
 from canteen_preorder.common import Category, Meal, User, Order
 
@@ -20,6 +22,12 @@ def test_backend_create_and_login_user():
     user1 = user_testing_collection(backend)[0]
     user2 = backend.login("test_user@gmail.com", "test123pass")
     assert user1 == user2
+
+def test_backend_create_user_twice():
+    backend = testing_backend()
+    backend.create_user("test_user", "test_user@gmail.com", "test123pass", True)
+    with pytest.raises(sqlite3.IntegrityError):
+        backend.create_user("test_user", "test_user@gmail.com", "differentpass", False)
 
 def test_backend_create_and_get_users():
     backend = testing_backend()
