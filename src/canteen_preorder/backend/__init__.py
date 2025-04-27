@@ -1,7 +1,7 @@
 import sqlite3
 from argon2 import PasswordHasher
 from typing import Optional
-from canteen_preorder.common import Meal, Id, User, Cost, OrderItem, Order
+from canteen_preorder.common import Meal, Id, User, Cost, OrderItem, Order, Category
 
 class PreorderBackend:
     def __init__(self, db_path: str = "canteen.db") -> None:
@@ -87,11 +87,23 @@ class PreorderBackend:
         return self.get_user(user_id)
     
     # MEALS
+    def __meal(self, row: tuple(int, str, int, int, int, int)) -> Meal:
+        return Meal(row[0], row[1], row[2], Category(row[3]), row[4], row[5] > 0)
+
     def get_meals(self) -> list[Meal]:
-        pass
+        cur = self.db.cursor()
+        res = cur.execute("select id, name, cost, category, stock from meals")
+        self.db.commit()
+        return [self.__meal(meal) for meal in res.fetchall()]
 
     def get_meal(self, meal_id: Id) -> Optional[Meal]:
-        pass
+        cur = self.db.cursor()
+        res = cur.execute("select id, name, cost, category, stock from meals where id = ?", meal_id)
+        self.db.commit()
+        data = res.fetchone()
+        if data is None:
+            return None
+        return self.__meal(data)
 
     # Staff Only
     def create_meal(self, name: str, cost: Cost, category: int, stock: int, available: bool = True) -> Meal:
