@@ -11,18 +11,18 @@ class User(NamedTuple):
     email: str
     staff: bool = False
 
-class Meal(NamedTuple):
-    meal_id: Id
-    name: str
-    cost: Cost
-    category: int
-    stock: int
-    available: bool = True
-
 class Category(Enum):
     BREAKFAST = 0
     LUNCH = 1
     SNACK = 2
+
+class Meal(NamedTuple):
+    meal_id: Id
+    name: str
+    cost: Cost
+    category: Category
+    stock: int
+    available: bool = True
 
 class Order(NamedTuple):
     order_id: Id
