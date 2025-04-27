@@ -51,6 +51,9 @@ class PreorderBackend:
         pass
 
     # Staff Only
+    def get_users(self) -> list[User]:
+        pass
+
     def create_user(self, name: str, email: str, password: str, staff: bool = False) -> User:
         pass
     
