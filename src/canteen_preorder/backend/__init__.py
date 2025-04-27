@@ -128,7 +128,7 @@ class PreorderBackend:
     
     def update_meal_availability(self, meal_id: Id, available: bool = False) -> None:
         cur = self.db.cursor()
-        cur.execute("update meals set availability = ? where id = ?", (available if 1 else 0, meal_id))
+        cur.execute("update meals set available = ? where id = ?", (available if 1 else 0, meal_id))
         self.db.commit()
 
     # ORDERS
