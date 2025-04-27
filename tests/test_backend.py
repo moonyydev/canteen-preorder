@@ -1,6 +1,6 @@
 import pytest
 import sqlite3
-from canteen_preorder.backend import PreorderBackend, BackendException
+from canteen_preorder.backend import PreorderBackend, BackendConstraintException, BackendNotFoundException
 from canteen_preorder.common import Category, Meal, User, Order
 
 def testing_backend() -> PreorderBackend:
@@ -96,7 +96,7 @@ def test_backend_update_meal_cost():
 def test_backend_update_nonexistant_meal_cost():
     backend = testing_backend()
     meal_testing_collection(backend)
-    with pytest.raises(BackendException):
+    with pytest.raises(BackendNotFoundException):
         backend.update_meal_cost(98, 210)
 
 def test_backend_update_meal_stock():
@@ -109,7 +109,7 @@ def test_backend_update_meal_stock():
 def test_backend_update_nonexistant_meal_stock():
     backend = testing_backend()
     meal_testing_collection(backend)
-    with pytest.raises(BackendException):
+    with pytest.raises(BackendNotFoundException):
         backend.update_meal_stock(37, 4)
 
 def test_backend_update_meal_availability():
@@ -122,7 +122,7 @@ def test_backend_update_meal_availability():
 def test_backend_update_nonexistant_meal_availability():
     backend = testing_backend()
     meal_testing_collection(backend)
-    with pytest.raises(BackendException):
+    with pytest.raises(BackendNotFoundException):
         backend.update_meal_availability(15, False)
 
 def order_testing_collection(backend: PreorderBackend) -> list[Order]:
@@ -143,14 +143,14 @@ def test_backend_create_order():
 def test_backend_create_order_wrong_meal():
     backend = testing_backend()
     user_testing_collection(backend)
-    with pytest.raises(BackendException):
+    with pytest.raises(BackendNotFoundException):
         backend.create_order(1, [(1, 1), (3, 1), (82, 3), (2, 1)])
 
 def test_backend_create_order_high_quantity():
     backend = testing_backend()
     user_testing_collection(backend)
     meal_testing_collection(backend)
-    with pytest.raises(BackendException):
+    with pytest.raises(BackendConstraintException):
         backend.create_order(1, [(1, 1), (4, 1), (3, 15), (2, 1)])
 
 def test_backend_get_orders():

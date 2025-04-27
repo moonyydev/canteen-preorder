@@ -122,21 +122,21 @@ class PreorderBackend:
         cur = self.db.cursor()
         cur.execute("update meals set stock = ? where id = ?", (stock, meal_id))
         if cur.rowcount == 0:
-            raise BackendException("meal does not exist")
+            raise BackendNotFoundException("meal does not exist")
         self.db.commit()
 
     def update_meal_cost(self, meal_id: Id, cost: Cost) -> None:
         cur = self.db.cursor()
         cur.execute("update meals set cost = ? where id = ?", (cost, meal_id))
         if cur.rowcount == 0:
-            raise BackendException("meal does not exist")
+            raise BackendNotFoundException("meal does not exist")
         self.db.commit()
     
     def update_meal_availability(self, meal_id: Id, available: bool = False) -> None:
         cur = self.db.cursor()
         cur.execute("update meals set available = ? where id = ?", (available if 1 else 0, meal_id))
         if cur.rowcount == 0:
-            raise BackendException("meal does not exist")
+            raise BackendNotFoundException("meal does not exist")
         self.db.commit()
 
     # ORDERS
@@ -170,11 +170,14 @@ class PreorderBackend:
         for (item, quantity) in items:
             meal = self.get_meal(item)
             if meal is None:
-                raise BackendException("meal does not exist")
+                raise BackendNotFoundException("meal does not exist")
             if meal.stock < quantity:
-                raise BackendException("less stock than order quantity")
+                raise BackendConstraintException("less stock than order quantity")
             self.update_meal_stock(meal.meal_id, meal.stock - quantity)
         return self.__order((order_id, user_id, order_time, items_str))
 
-class BackendException(Exception):
+class BackendNotFoundException(Exception):
+    pass
+
+class BackendConstraintException(Exception):
     pass
