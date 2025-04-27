@@ -1,4 +1,5 @@
 import sqlite3
+import json
 from argon2 import PasswordHasher
 from typing import Optional
 from canteen_preorder.common import Meal, Id, User, Cost, OrderItem, Order, Category
@@ -129,6 +130,10 @@ class PreorderBackend:
         self.db.commit()
 
     # ORDERS
+    def __order(self, row: tuple(int, int, int, str)) -> Order:
+        items: list[OrderItem] = json.loads(row[3])
+        return Order(row[0], row[1], row[2], items)
+
     def get_orders(self) -> list[Order]:
         pass
     
