@@ -141,7 +141,13 @@ class PreorderBackend:
         return [self.__order(orders) for orders in res.fetchall()]
     
     def get_order(self, order_id: Id) -> Optional[Order]:
-        pass
+        cur = self.db.cursor()
+        res = cur.execute("select id, user, order_time, data from orders where id = ?", order_id)
+        self.db.commit()
+        data = res.fetchone()
+        if data is None:
+            return None
+        return self.__order(data)
 
     def create_order(self, user_id: Id, items: list[OrderItem]) -> Order:
         pass
