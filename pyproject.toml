@@ -9,7 +9,9 @@ authors = [
     { name = "Shreya Srivastava", email = "shreya.srivastava@cischool.edu.pl" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "argon2>=0.1.10",
+]
 
 [project.scripts]
 canteen-preorder = "canteen_preorder:main"
