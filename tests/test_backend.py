@@ -44,3 +44,7 @@ def test_backend_create_meal():
     backend = testing_backend()
     meal_testing_collection(backend)
     
+def test_backend_get_meals():
+    backend = testing_backend()
+    meals = meal_testing_collection(backend)
+    assert meals == backend.get_meals()
