@@ -60,7 +60,7 @@ class PreorderBackend:
         return self.__user(data[0:4])
 
 
-    def __user(row: tuple[int, str, str, int]) -> User:
+    def __user(self, row: tuple[int, str, str, int]) -> User:
         return User(row[0], row[1], row[2], row[3] > 0)
     
     def get_user(self, user_id: Id) -> Optional[User]:
