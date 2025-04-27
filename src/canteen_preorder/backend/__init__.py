@@ -49,7 +49,7 @@ class PreorderBackend:
     # USERS
     def login(self, email: str, password: str) -> Optional[User]:
         cur = self.db.cursor()
-        res = cur.execute("select id, name, email, staff, password from users where email = ?")
+        res = cur.execute("select id, name, email, staff, password from users where email = ?", (email, ))
         data = res.fetchone()
         if data is None:
             return None
@@ -65,7 +65,7 @@ class PreorderBackend:
     
     def get_user(self, user_id: Id) -> Optional[User]:
         cur = self.db.cursor()
-        res = cur.execute("select id, name, email, staff from users where id = ?", (user_id))
+        res = cur.execute("select id, name, email, staff from users where id = ?", (user_id, ))
         data = res.fetchone()
         self.db.commit()
         if data is None:
@@ -101,7 +101,7 @@ class PreorderBackend:
 
     def get_meal(self, meal_id: Id) -> Optional[Meal]:
         cur = self.db.cursor()
-        res = cur.execute("select id, name, cost, category, stock, available from meals where id = ?", (meal_id))
+        res = cur.execute("select id, name, cost, category, stock, available from meals where id = ?", (meal_id, ))
         data = res.fetchone()
         self.db.commit()
         if data is None:
@@ -145,7 +145,7 @@ class PreorderBackend:
     
     def get_order(self, order_id: Id) -> Optional[Order]:
         cur = self.db.cursor()
-        res = cur.execute("select id, user, order_time, data from orders where id = ?", (order_id))
+        res = cur.execute("select id, user, order_time, data from orders where id = ?", (order_id, ))
         data = res.fetchone()
         self.db.commit()
         if data is None:
