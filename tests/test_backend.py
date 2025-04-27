@@ -89,3 +89,9 @@ def test_backend_create_order():
     backend = testing_backend()
     user_testing_collection(backend)
     order_testing_collection(backend)
+
+def test_backend_get_orders():
+    backend = testing_backend()
+    user_testing_collection(backend)
+    orders = order_testing_collection(backend)
+    assert orders == backend.get_orders()
