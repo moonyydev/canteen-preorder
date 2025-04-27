@@ -59,7 +59,7 @@ class PreorderBackend:
         return self.__user(data[0:4])
 
 
-    def __user(row: tuple(int, str, str, int)) -> User:
+    def __user(row: tuple[int, str, str, int]) -> User:
         return User(row[0], row[1], row[2], row[3] > 0)
     
     def get_user(self, user_id: Id) -> Optional[User]:
@@ -88,7 +88,7 @@ class PreorderBackend:
         return self.get_user(user_id)
     
     # MEALS
-    def __meal(self, row: tuple(int, str, int, int, int, int)) -> Meal:
+    def __meal(self, row: tuple[int, str, int, int, int, int]) -> Meal:
         return Meal(row[0], row[1], row[2], Category(row[3]), row[4], row[5] > 0)
 
     def get_meals(self) -> list[Meal]:
@@ -130,7 +130,7 @@ class PreorderBackend:
         self.db.commit()
 
     # ORDERS
-    def __order(self, row: tuple(int, int, int, str)) -> Order:
+    def __order(self, row: tuple[int, int, int, str]) -> Order:
         items: list[OrderItem] = json.loads(row[3])
         return Order(row[0], row[1], row[2], items)
 
