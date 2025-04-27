@@ -159,6 +159,13 @@ class PreorderBackend:
         res = cur.execute("insert into orders (user, order_time, data) values (?, ?, ?) returning id", (user_id, order_time, items_str))
         order_id: int = res.fetchone()[0]
         self.db.commit()
+        for (item, quantity) in items:
+            meal = self.get_meal(item)
+            if meal is None:
+                raise BackendException("meal does not exist")
+            if meal.stock < quantity:
+                raise BackendException("less stock than order quantity")
+            self.update_meal_stock(meal.meal_id, meal.stock - quantity)
         return self.__order((order_id, user_id, order_time, items_str))
 
 class BackendException(Exception):
