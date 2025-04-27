@@ -74,6 +74,11 @@ def test_backend_get_meal():
     meal2 = backend.get_meal(meal1.meal_id)
     assert meal1 == meal2
 
+def test_backend_get_nonexistant_meal():
+    backend = testing_backend()
+    meal_testing_collection(backend)
+    assert backend.get_meal(83) is None
+
 def test_backend_update_meal_cost():
     backend = testing_backend()
     target = meal_testing_collection(backend)[1]
