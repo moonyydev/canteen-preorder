@@ -1,5 +1,3 @@
-import pytest
-from sqlite3 import DatabaseError
 from canteen_preorder.backend import PreorderBackend
 from canteen_preorder.common import Category, Meal, User
 
