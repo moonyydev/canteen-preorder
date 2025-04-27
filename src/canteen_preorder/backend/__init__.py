@@ -58,7 +58,10 @@ class PreorderBackend:
 
     # Staff Only
     def get_users(self) -> list[User]:
-        pass
+        cur = self.db.cursor()
+        res = cur.execute("select id, name, email, staff from users")
+        cur.close()
+        return [self.__user(user) for user in res.fetchall()]
 
     def create_user(self, name: str, email: str, password: str, staff: bool = False) -> User:
         cur = self.db.cursor()
