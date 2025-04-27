@@ -79,10 +79,10 @@ def test_backend_update_meal_availability():
 def order_testing_collection(backend: PreorderBackend) -> list[Order]:
     users = [user.user_id for user in backend.get_users()]
     orders = []
-    orders.append(backend.create_order(users[len(orders) % len(users)], [(0, 1), (1, 2)]))
-    orders.append(backend.create_order(users[len(orders) % len(users)], [(1, 4), (3, 1)]))
-    orders.append(backend.create_order(users[len(orders) % len(users)], [(2, 1), (0, 7)]))
-    orders.append(backend.create_order(users[len(orders) % len(users)], [(1, 3), (3, 2)]))
+    orders.append(backend.create_order(users[len(orders) % len(users)], [(1, 1), (2, 2)]))
+    orders.append(backend.create_order(users[len(orders) % len(users)], [(2, 2), (4, 3)]))
+    orders.append(backend.create_order(users[len(orders) % len(users)], [(3, 1), (1, 1)]))
+    orders.append(backend.create_order(users[len(orders) % len(users)], [(4, 3), (4, 2)]))
     return orders
 
 def test_backend_create_order():
