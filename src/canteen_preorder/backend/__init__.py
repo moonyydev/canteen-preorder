@@ -1,5 +1,6 @@
 import sqlite3
 import json
+import time
 from argon2 import PasswordHasher
 from typing import Optional
 from canteen_preorder.common import Meal, Id, User, Cost, OrderItem, Order, Category
@@ -150,4 +151,10 @@ class PreorderBackend:
         return self.__order(data)
 
     def create_order(self, user_id: Id, items: list[OrderItem]) -> Order:
-        pass
+        items_str = json.dumps(items)
+        order_time = int(time.time())
+        cur = self.db.cursor()
+        res = cur.execute("insert into orders (user, order_time, data) values (?, ?, ?) returning id", user_id, order_time, items_str)
+        self.db.commit()
+        order_id: int = res.fetchone()[0]
+        return self.__order((order_id, user_id, order_time, items_str))
