@@ -1,0 +1,7 @@
+[project]
+name = "canteen-preorder"
+version = "0.1.0"
+description = "School Canteen Pre-Order System"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
