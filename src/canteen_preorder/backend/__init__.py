@@ -2,6 +2,7 @@ import sqlite3
 import json
 import time
 from argon2 import PasswordHasher
+import argon2
 from typing import Optional
 from canteen_preorder.common import Meal, Id, User, Cost, OrderItem, Order, Category
 
@@ -53,10 +54,11 @@ class PreorderBackend:
         data = res.fetchone()
         if data is None:
             return None
-        hash_correct = self.hasher.verify(data[4], password)
-        self.db.commit()
-        if not hash_correct:
+        try:
+            self.hasher.verify(data[4], password)
+        except argon2.exceptions.VerifyMismatchError:
             return None
+        self.db.commit()
         return self.__user(data[0:4])
 
 
