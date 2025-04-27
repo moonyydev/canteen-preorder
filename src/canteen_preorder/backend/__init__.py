@@ -1,10 +1,13 @@
 import sqlite3
+from argon2 import PasswordHasher
 from canteen_preorder.common import Meal, Id, User, Cost, OrderItem, Order
 
 class PreorderBackend:
     def __init__(self, db_path: str = "canteen.db") -> None:
         self.db = sqlite3.connect(db_path)
         self.__prepare()
+        
+        self.hasher = PasswordHasher()
     
     def __prepare(self) -> None:
         cur = self.db.cursor()
