@@ -94,7 +94,7 @@ class PreorderBackend:
 
     def get_meals(self) -> list[Meal]:
         cur = self.db.cursor()
-        res = cur.execute("select id, name, cost, category, stock from meals")
+        res = cur.execute("select id, name, cost, category, stock, available from meals")
         data = res.fetchall()
         self.db.commit()
         return [self.__meal(meal) for meal in data]
