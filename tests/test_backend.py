@@ -1,6 +1,6 @@
 import pytest
 import sqlite3
-from canteen_preorder.backend import PreorderBackend
+from canteen_preorder.backend import PreorderBackend, BackendException
 from canteen_preorder.common import Category, Meal, User, Order
 
 def testing_backend() -> PreorderBackend:
@@ -93,6 +93,12 @@ def test_backend_update_meal_cost():
     expected = Meal(target.meal_id, target.name, target.cost + 30, target.category, target.stock, target.available)
     assert expected == backend.get_meal(target.meal_id)
 
+def test_backend_update_nonexistant_meal_cost():
+    backend = testing_backend()
+    meal_testing_collection(backend)
+    with pytest.raises(BackendException):
+        backend.update_meal_cost(98, 210)
+
 def test_backend_update_meal_stock():
     backend = testing_backend()
     target = meal_testing_collection(backend)[1]
@@ -100,12 +106,24 @@ def test_backend_update_meal_stock():
     expected = Meal(target.meal_id, target.name, target.cost, target.category, 7, target.available)
     assert expected == backend.get_meal(target.meal_id)
 
+def test_backend_update_nonexistant_meal_stock():
+    backend = testing_backend()
+    meal_testing_collection(backend)
+    with pytest.raises(BackendException):
+        backend.update_meal_stock(37, 4)
+
 def test_backend_update_meal_availability():
     backend = testing_backend()
     target = meal_testing_collection(backend)[1]
     backend.update_meal_availability(target.meal_id, False)
     expected = Meal(target.meal_id, target.name, target.cost, target.category, target.stock, False)
     assert expected == backend.get_meal(target.meal_id)
+
+def test_backend_update_nonexistant_meal_availability():
+    backend = testing_backend()
+    meal_testing_collection(backend)
+    with pytest.raises(BackendException):
+        backend.update_meal_availability(15, False)
 
 def order_testing_collection(backend: PreorderBackend) -> list[Order]:
     users = [user.user_id for user in backend.get_users()]
