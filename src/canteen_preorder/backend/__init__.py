@@ -46,7 +46,16 @@ class PreorderBackend:
 
     # USERS
     def login(self, email: str, password: str) -> Optional[User]:
-        password_hash = self.hasher.hash(password)
+        cur = self.db.cursor()
+        res = cur.execute("select id, name, email, staff, password from users where email = ?")
+        data = res.fetchone()
+        if data is None:
+            return None
+        hash_correct = self.hasher.verify(data[4], password)
+        self.db.commit()
+        if not hash_correct:
+            return None
+        return self.__user(data[0:4])
 
 
     def __user(row: tuple(int, str, str, int)) -> User:
