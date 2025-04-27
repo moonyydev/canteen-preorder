@@ -140,6 +140,19 @@ def test_backend_create_order():
     meal_testing_collection(backend)
     order_testing_collection(backend)
 
+def test_backend_create_order_wrong_meal():
+    backend = testing_backend()
+    user_testing_collection(backend)
+    with pytest.raises(BackendException):
+        backend.create_order(1, [(1, 1), (3, 1), (82, 3), (2, 1)])
+
+def test_backend_create_order_high_quantity():
+    backend = testing_backend()
+    user_testing_collection(backend)
+    meal_testing_collection(backend)
+    with pytest.raises(BackendException):
+        backend.create_order(1, [(1, 1), (4, 1), (3, 15), (2, 1)])
+
 def test_backend_get_orders():
     backend = testing_backend()
     user_testing_collection(backend)
