@@ -54,3 +54,24 @@ def test_backend_get_meal():
     meal1 = meal_testing_collection(backend)[2]
     meal2 = backend.get_meal(meal1.meal_id)
     assert meal1 == meal2
+
+def test_backend_update_meal_cost():
+    backend = testing_backend()
+    target = meal_testing_collection(backend)[1]
+    backend.update_meal_cost(target.meal_id, target.cost + 30)
+    target.cost += 30
+    assert target == backend.get_meal(target.meal_id)
+
+def test_backend_update_meal_stock():
+    backend = testing_backend()
+    target = meal_testing_collection(backend)[1]
+    backend.update_meal_stock(target.meal_id, 7)
+    target.stock = 7
+    assert target == backend.get_meal(target.meal_id)
+
+def test_backend_update_meal_availability():
+    backend = testing_backend()
+    target = meal_testing_collection(backend)[1]
+    backend.update_meal_availability(target.meal_id, False)
+    target.available = False
+    assert target == backend.get_meal(target.meal_id)
