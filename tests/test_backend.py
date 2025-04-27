@@ -1,5 +1,5 @@
 from canteen_preorder.backend import PreorderBackend
-from canteen_preorder.common import Category, Meal, User
+from canteen_preorder.common import Category, Meal, User, Order
 
 def testing_backend() -> PreorderBackend:
     return PreorderBackend(":memory:")
@@ -75,3 +75,12 @@ def test_backend_update_meal_availability():
     backend.update_meal_availability(target.meal_id, False)
     expected = Meal(target.meal_id, target.name, target.cost, target.category, target.stock, False)
     assert expected == backend.get_meal(target.meal_id)
+
+def order_testing_collection(backend: PreorderBackend) -> list[Order]:
+    users = [user.user_id for user in backend.get_users()]
+    orders = []
+    orders.append(backend.create_order(users[len(orders) % len(users)], [(0, 1), (1, 2)]))
+    orders.append(backend.create_order(users[len(orders) % len(users)], [(1, 4), (3, 1)]))
+    orders.append(backend.create_order(users[len(orders) % len(users)], [(2, 1), (0, 7)]))
+    orders.append(backend.create_order(users[len(orders) % len(users)], [(1, 3), (3, 2)]))
+    return orders
