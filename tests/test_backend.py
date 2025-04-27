@@ -56,7 +56,13 @@ def meal_testing_collection(backend: PreorderBackend) -> list[Meal]:
 def test_backend_create_meal():
     backend = testing_backend()
     meal_testing_collection(backend)
-    
+
+def test_backend_create_meal_twice():
+    backend = testing_backend()
+    backend.create_meal("Fruit Salad", 820, Category.SNACK, 2)
+    with pytest.raises(sqlite3.IntegrityError):
+        backend.create_meal("Fruit Salad", 810, Category.LUNCH, 3)
+
 def test_backend_get_meals():
     backend = testing_backend()
     meals = meal_testing_collection(backend)
