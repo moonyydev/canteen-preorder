@@ -46,7 +46,8 @@ class PreorderBackend:
 
     # USERS
     def login(self, email: str, password: str) -> Optional[User]:
-        pass
+        password_hash = self.hasher.hash(password)
+
 
     def __user(row: tuple(int, str, str, int)) -> User:
         return User(row[0], row[1], row[2], row[3] > 0)
@@ -54,7 +55,7 @@ class PreorderBackend:
     def get_user(self, user_id: Id) -> Optional[User]:
         cur = self.db.cursor()
         res = cur.execute("select id, name, email, staff from users where id = ?", user_id)
-        cur.close()
+        self.db.commit()
         data = res.fetchone()
         if data is None:
             return None
@@ -64,7 +65,7 @@ class PreorderBackend:
     def get_users(self) -> list[User]:
         cur = self.db.cursor()
         res = cur.execute("select id, name, email, staff from users")
-        cur.close()
+        self.db.commit()
         return [self.__user(user) for user in res.fetchall()]
 
     def create_user(self, name: str, email: str, password: str, staff: bool = False) -> User:
