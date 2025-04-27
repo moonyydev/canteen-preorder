@@ -82,11 +82,9 @@ class PreorderBackend:
     def create_user(self, name: str, email: str, password: str, staff: bool = False) -> User:
         cur = self.db.cursor()
         password_hash = self.hasher.hash(password)
-        cur.execute("insert into users (name, email, password, staff) values (?, ?, ?, ?)", name, email, password_hash, staff if 1 else 0)
-        res = cur.execute("select id from users where email = ?", email)
-        user_id: int = res.fetchone()[0]
+        res = cur.execute("insert into users (name, email, password, staff) values (?, ?, ?, ?) returning id, name, email, staff", name, email, password_hash, staff if 1 else 0)
         self.db.commit()
-        return self.get_user(user_id)
+        return self.__user(res.fetchone())
     
     # MEALS
     def __meal(self, row: tuple[int, str, int, int, int, int]) -> Meal:
@@ -110,8 +108,7 @@ class PreorderBackend:
     # Staff Only
     def create_meal(self, name: str, cost: Cost, category: Category, stock: int, available: bool = True) -> Meal:
         cur = self.db.cursor()
-        cur.execute("insert into meals (name, cost, category, stock, available) values (?, ?, ?, ?, ?)", name, cost, category.value, stock, available if 1 else 0)
-        res = cur.execute("select id, name, cost, category, stock, available from meals where name = ?", name)
+        res = cur.execute("insert into meals (name, cost, category, stock, available) values (?, ?, ?, ?, ?) returning *", name, cost, category.value, stock, available if 1 else 0)
         self.db.commit()
         return self.__meal(res.fetchone())
 
