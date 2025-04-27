@@ -84,3 +84,8 @@ def order_testing_collection(backend: PreorderBackend) -> list[Order]:
     orders.append(backend.create_order(users[len(orders) % len(users)], [(2, 1), (0, 7)]))
     orders.append(backend.create_order(users[len(orders) % len(users)], [(1, 3), (3, 2)]))
     return orders
+
+def test_backend_create_order():
+    backend = testing_backend()
+    user_testing_collection(backend)
+    order_testing_collection(backend)
