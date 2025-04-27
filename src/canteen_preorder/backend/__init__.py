@@ -46,9 +46,15 @@ class PreorderBackend:
     # USERS
     def login(self, email: str, password: str) -> User:
         pass
+
+    def __user(row: tuple(int, str, str, int)) -> User:
+        return User(row[0], row[1], row[2], row[3] > 0)
     
     def get_user(self, user_id: Id) -> User:
-        pass
+        cur = self.db.cursor()
+        res = cur.execute("select id, name, email, staff from users where id = ?", user_id)
+        cur.close()
+        return self.__user(res.fetchone())
 
     # Staff Only
     def get_users(self) -> list[User]:
