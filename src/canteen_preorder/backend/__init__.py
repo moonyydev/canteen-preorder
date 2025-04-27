@@ -121,16 +121,22 @@ class PreorderBackend:
     def update_meal_stock(self, meal_id: Id, stock: int) -> None:
         cur = self.db.cursor()
         cur.execute("update meals set stock = ? where id = ?", (stock, meal_id))
+        if cur.rowcount == 0:
+            raise BackendException("meal does not exist")
         self.db.commit()
 
     def update_meal_cost(self, meal_id: Id, cost: Cost) -> None:
         cur = self.db.cursor()
         cur.execute("update meals set cost = ? where id = ?", (cost, meal_id))
+        if cur.rowcount == 0:
+            raise BackendException("meal does not exist")
         self.db.commit()
     
     def update_meal_availability(self, meal_id: Id, available: bool = False) -> None:
         cur = self.db.cursor()
         cur.execute("update meals set available = ? where id = ?", (available if 1 else 0, meal_id))
+        if cur.rowcount == 0:
+            raise BackendException("meal does not exist")
         self.db.commit()
 
     # ORDERS
