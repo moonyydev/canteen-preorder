@@ -40,6 +40,11 @@ def test_backend_get_user():
     user2 = backend.get_user(user1.user_id)
     assert user1 == user2
 
+def test_backend_get_nonexistant_user():
+    backend = testing_backend()
+    user_testing_collection(backend)
+    assert backend.get_user(11) is None
+
 def meal_testing_collection(backend: PreorderBackend) -> list[Meal]:
     meals = []
     meals.append(backend.create_meal("Fruit Salad", 820, Category.SNACK, 2))
