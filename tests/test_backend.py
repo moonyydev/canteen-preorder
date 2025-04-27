@@ -28,3 +28,12 @@ def test_backend_create_and_get_users():
     users.append(backend.create_user("userthree", "userthethird@gmail.com", "wowpass", False))
     users.append(backend.create_user("userV", "fifthuser@gmail.com", "unexpectedpassword", False))
     assert users == backend.get_users()
+
+def test_backend_get_user():
+    backend = PreorderBackend(":memory:")
+    backend.create_user("test_user", "test_user@gmail.com", "test123pass", True)
+    user1 = backend.create_user("user2", "2nduser@gmail.com", "somepassword", False)
+    backend.create_user("userthree", "userthethird@gmail.com", "wowpass", False)
+    backend.create_user("userV", "fifthuser@gmail.com", "unexpectedpassword", False)
+    user2 = backend.get_user(user1.user_id)
+    assert user1 == user2
