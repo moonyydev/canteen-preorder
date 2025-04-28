@@ -190,30 +190,39 @@ class PreorderBackend:
 
     def update_meal_stock(self, meal_id: Id, stock: int) -> None:
         cur = self.db.cursor()
+        self.__internal_update_meal_stock(cur, meal_id, stock)
+        self.db.commit()
+    
+    def __internal_update_meal_stock(self, cur: Cursor, meal_id: Id, stock: int) -> None:
         # update stock in a row of meals of which the id is meal_id
         cur.execute("update meals set stock = ? where id = ?", (stock, meal_id))
         # if no rows have been changed, no meal has been modified, so there's no meal with meal_id
         if cur.rowcount == 0:
             raise BackendNotFoundException("meal does not exist")
-        self.db.commit()
 
     def update_meal_cost(self, meal_id: Id, cost: Cost) -> None:
         cur = self.db.cursor()
+        self.__internal_update_meal_cost(cur, meal_id, cost)
+        self.db.commit()
+    
+    def __internal_update_meal_cost(self, cur: Cursor, meal_id: Id, cost: Cost) -> None:
         # update cost in a row of meals of which the id is meal_id
         cur.execute("update meals set cost = ? where id = ?", (cost, meal_id))
         # if no rows have been changed, no meal has been modified, so there's no meal with meal_id
         if cur.rowcount == 0:
             raise BackendNotFoundException("meal does not exist")
-        self.db.commit()
     
     def update_meal_availability(self, meal_id: Id, available: bool = False) -> None:
         cur = self.db.cursor()
+        self.__internal_update_meal_availability(cur, meal_id, available)
+        self.db.commit()
+
+    def __internal_update_meal_availability(self, cur: Cursor, meal_id: Id, available: bool = False) -> None:
         # update available in a row of meals of which the id is meal_id
         cur.execute("update meals set available = ? where id = ?", (available if 1 else 0, meal_id))
         # if no rows have been changed, no meal has been modified, so there's no meal with meal_id
         if cur.rowcount == 0:
             raise BackendNotFoundException("meal does not exist")
-        self.db.commit()
 
     # ORDERS
     def __order(self, row: tuple[int, int, int, str]) -> Order:
