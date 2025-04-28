@@ -9,6 +9,15 @@ def testing_backend() -> PreorderBackend:
 def test_backend_init():
     testing_backend()
 
+def test_backend_create_user():
+    backend = testing_backend()
+    u1 = backend.create_user("test_user", "test_user@gmail.com", "test123pass", True)
+    u1e = User(u1.user_id, "test_user", "test_user@gmail.com", True)
+    assert u1 == u1e
+    u2 = backend.create_user("user2", "2nduser@gmail.com", "somepassword", False)
+    u2e = User(u2.user_id, "user2", "2nduser@gmail.com", False)
+    assert u2 == u2e
+
 def user_testing_collection(backend: PreorderBackend) -> list[User]:
     users = []
     users.append(backend.create_user("test_user", "test_user@gmail.com", "test123pass", True))
@@ -62,7 +71,11 @@ def meal_testing_collection(backend: PreorderBackend) -> list[Meal]:
 
 def test_backend_create_meal():
     backend = testing_backend()
-    meal_testing_collection(backend)
+    m1 = backend.create_meal("Fruit Salad", 820, Category.SNACK, 2)
+    m1e = Meal(m1.meal_id, "Fruit Salad", 820, Category.SNACK, 2)
+    assert m1 == m1e
+    m2 = backend.create_meal("Chicken Sandwich", 670, Category.LUNCH, 1)
+    m2e = Meal(m2.meal_id, "Chicken Sandwich", 670, Category.LUNCH, 1)
 
 def test_backend_create_meal_twice():
     backend = testing_backend()
