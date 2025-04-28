@@ -112,6 +112,16 @@ def test_backend_update_nonexistant_meal_cost():
     with pytest.raises(BackendNotFoundException):
         backend.update_meal_cost(98, 210)
 
+def test_backend_update_meal_cost_wrong():
+    backend = testing_backend()
+    meal_testing_collection(backend)
+    with pytest.raises(BackendConstraintException):
+        backend.update_meal_cost(1, 0)
+    
+    with pytest.raises(BackendConstraintException):
+        backend.update_meal_cost(1, -350)
+
+
 def test_backend_update_meal_stock():
     backend = testing_backend()
     target = meal_testing_collection(backend)[1]
@@ -124,6 +134,13 @@ def test_backend_update_nonexistant_meal_stock():
     meal_testing_collection(backend)
     with pytest.raises(BackendNotFoundException):
         backend.update_meal_stock(37, 4)
+
+def test_backend_update_meal_stock_wrong():
+    backend = testing_backend()
+    meal_testing_collection(backend)
+    with pytest.raises(BackendConstraintException):
+        backend.update_meal_stock(1, -35)
+
 
 def test_backend_update_meal_availability():
     backend = testing_backend()
