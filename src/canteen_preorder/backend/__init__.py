@@ -262,6 +262,13 @@ class PreorderBackend:
         return self.__order(data)
 
     def create_order(self, user_id: Id, items: list[OrderItem]) -> Order:
+        cur = self.db.cursor()
+        order = self.__internal_create_order(cur, user_id, items)
+        self.db.commit()
+        return order
+        
+
+    def __internal_create_order(self, cur: Cursor, user_id: Id, items: list[OrderItem]) -> Order:
         # check if the user exists
         if self.get_user(user_id) is None:
             raise BackendNotFoundException("user does not exist")
@@ -269,12 +276,10 @@ class PreorderBackend:
         items_str = json.dumps(items)
         # get current unix timestamp
         order_time = int(time.time())
-        cur = self.db.cursor()
         # insert order, returning the order's id
         res = cur.execute("insert into orders (user, order_time, data) values (?, ?, ?) returning id", (user_id, order_time, items_str))
         # fetch one result from the result set and get the 1st field
         order_id: int = res.fetchone()[0]
-        self.db.commit()
         # go through all items and deduct the order quantity from the stock
         for (item, quantity) in items:
             # if quantity is not positive, raise constraint exception
