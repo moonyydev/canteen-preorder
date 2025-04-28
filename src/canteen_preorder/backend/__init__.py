@@ -246,11 +246,15 @@ class PreorderBackend:
     
     def get_order(self, order_id: Id) -> Optional[Order]:
         cur = self.db.cursor()
+        order = self.__internal_get_order(cur, order_id)
+        self.db.commit()
+        return order
+        
+    def __internal_get_order(self, cur: Cursor, order_id: Id) -> Optional[Order]:
         # get order with id order_id
         res = cur.execute("select id, user, order_time, data from orders where id = ?", (order_id, ))
         # fetch ONE result from the result set
         data = res.fetchone()
-        self.db.commit()
         # if we didn't get any data, there's no order matching the id, return None
         if data is None:
             return None
