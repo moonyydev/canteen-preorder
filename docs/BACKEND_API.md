@@ -55,7 +55,11 @@ create order with user id `user_id`, items `items`, current time as timestamp,
 
 this function raises `BackendNotFoundException` if any of the meals in the order items aren't found,
 
-this function raises `BackendConstraintException` if the order exceeds the available stock
+this function raises `BackendConstraintException` if the order exceeds the available stock,
+
+this function raises `BackendNotFoundException` if the ordering user isn't found,
+
+this function raises `BackendConstraintException` if order quantity is not positive
 
 ## Staff Only
     def get_orders(self) -> list[Order]
