@@ -50,6 +50,14 @@ update the availability attribute of a meal with id `meal_id` to `available`,
 this function raises `BackendNotFoundException` if there's no meal with id `meal_id`
 
 # ORDERS
+    def create_order(self, user_id: Id, items: list[OrderItem]) -> Order
+create order with user id `user_id`, items `items`, current time as timestamp,
+
+this function raises `BackendNotFoundException` if any of the meals in the order items aren't found,
+
+this function raises `BackendConstraintException` if the order exceeds the available stock
+
+## Staff Only
     def get_orders(self) -> list[Order]
 get all the orders
 
@@ -57,10 +65,3 @@ get all the orders
 get order with id `order_id`,
 
 this function returns a `None` if there's no order with id `order_id`
-
-    def create_order(self, user_id: Id, items: list[OrderItem]) -> Order
-create order with user id `user_id`, items `items`, current time as timestamp,
-
-this function raises `BackendNotFoundException` if any of the meals in the order items aren't found,
-
-this function raises `BackendConstraintException` if the order exceeds the available stock
