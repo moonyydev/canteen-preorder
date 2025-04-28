@@ -85,7 +85,10 @@ class PreorderBackend:
     def create_user(self, name: str, email: str, password: str, staff: bool = False) -> User:
         cur = self.db.cursor()
         password_hash = self.hasher.hash(password)
-        res = cur.execute("insert into users (name, email, password, staff) values (?, ?, ?, ?) returning id, name, email, staff", (name, email, password_hash, staff if 1 else 0))
+        try:
+            res = cur.execute("insert into users (name, email, password, staff) values (?, ?, ?, ?) returning id, name, email, staff", (name, email, password_hash, staff if 1 else 0))
+        except sqlite3.IntegrityError:
+            raise BackendAlreadyExistsException("user with this name or email already exists")
         data = res.fetchone()
         self.db.commit()
         return self.__user(data)
@@ -113,7 +116,10 @@ class PreorderBackend:
     # Staff Only
     def create_meal(self, name: str, cost: Cost, category: Category, stock: int, available: bool = True) -> Meal:
         cur = self.db.cursor()
-        res = cur.execute("insert into meals (name, cost, category, stock, available) values (?, ?, ?, ?, ?) returning *", (name, cost, category.value, stock, available if 1 else 0))
+        try:
+            res = cur.execute("insert into meals (name, cost, category, stock, available) values (?, ?, ?, ?, ?) returning *", (name, cost, category.value, stock, available if 1 else 0))
+        except sqlite3.IntegrityError:
+            raise BackendAlreadyExistsException("meal with this name already exists in the database")
         data = res.fetchone()
         self.db.commit()
         return self.__meal(data)
@@ -184,4 +190,7 @@ class BackendNotFoundException(Exception):
     pass
 
 class BackendConstraintException(Exception):
+    pass
+
+class BackendAlreadyExistsException(Exception):
     pass
