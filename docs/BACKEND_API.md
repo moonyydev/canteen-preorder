@@ -17,7 +17,7 @@ get all the users
     def create_user(self, name: str, email: str, password: str, staff: bool = False) -> User
 create user with name `name`, email `email`, password `password` and the staff attribute `staff`,
 
-this function raises `sqlite3.IntegrityError` if the user already exists
+this function raises `BackendAlreadyExistsException` if the user already exists
 
 # MEALS
     def get_meals(self) -> list[Meal]
@@ -32,7 +32,7 @@ this function returns a `None` if there's no meal with id `meal_id`
     def create_meal(self, name: str, cost: Cost, category: Category, stock: int, available: bool = True) -> Meal
 create meal with name `name`, cost `cost`, category `category`, stock `stock`, and availability attribute `available`,
 
-this function raises an `sqlite3.IntegrityError` if the meal already exists
+this function raises an `BackendAlreadyExistsException` if the meal already exists
 
     def update_meal_stock(self, meal_id: Id, stock: int) -> None
 update the stock field of a meal with id `meal_id` to `stock`,
