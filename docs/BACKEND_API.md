@@ -51,7 +51,7 @@ this function raises `BackendNotFoundException` if there's no meal with id `meal
 
 # ORDERS
     def create_order(self, user_id: Id, items: list[OrderItem]) -> Order
-create order with user id `user_id`, items `items`, current time as timestamp,
+create order with user id `user_id`, items `items`, current time as timestamp, it will also deduct the ordered quantity from the stock of the ordered items
 
 this function raises `BackendNotFoundException` if any of the meals in the order items aren't found,
 
