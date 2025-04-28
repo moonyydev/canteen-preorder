@@ -99,11 +99,16 @@ class PreorderBackend:
     # Staff Only
     def get_users(self) -> list[User]:
         cur = self.db.cursor()
+        users = self.__internal_get_users(cur)
+        self.db.commit()
+        return users
+
+        
+    def __internal_get_users(self, cur: Cursor) -> list[User]:
         # get all users
         res = cur.execute("select id, name, email, staff from users")
         # fetch ALL of the results
         data = res.fetchall()
-        self.db.commit()
         # go through all of the users in data, and assemble them into User objects
         return [self.__user(user) for user in data]
 
