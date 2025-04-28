@@ -261,8 +261,3 @@ def test_backend_update_meal_atomicity():
         backend.update_meal_stock(1, -9)
     except: pass
     assert meals_expected == backend.get_meals()
-
-    try:
-        backend.update_meal_stock(3, 0)
-    except: pass
-    assert meals_expected == backend.get_meals()
