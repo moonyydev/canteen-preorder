@@ -270,7 +270,7 @@ class PreorderBackend:
 
     def __internal_create_order(self, cur: Cursor, user_id: Id, items: list[OrderItem]) -> Order:
         # check if the user exists
-        if self.get_user(user_id) is None:
+        if self.__internal_get_user(cur, user_id) is None:
             raise BackendNotFoundException("user does not exist")
         # turn items into a string with json
         items_str = json.dumps(items)
@@ -286,7 +286,7 @@ class PreorderBackend:
             if quantity <= 0:
                 raise BackendConstraintException("quantity must be positive")
             # get meal with id of the item
-            meal = self.get_meal(item)
+            meal = self.__internal_get_meal(cur, item)
             # if there's no meal with that id, raise not found exception
             if meal is None:
                 raise BackendNotFoundException("meal does not exist")
@@ -294,7 +294,7 @@ class PreorderBackend:
             if meal.stock < quantity:
                 raise BackendConstraintException("less stock than order quantity")
             # update the meal's stock
-            self.update_meal_stock(meal.meal_id, meal.stock - quantity)
+            self.__internal_update_meal_stock(cur, meal.meal_id, meal.stock - quantity)
         # assemble Order object
         return self.__order((order_id, user_id, order_time, items_str))
 
