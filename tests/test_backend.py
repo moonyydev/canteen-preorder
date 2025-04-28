@@ -1,6 +1,6 @@
 import pytest
 import sqlite3
-from canteen_preorder.backend import PreorderBackend, BackendConstraintException, BackendNotFoundException
+from canteen_preorder.backend import PreorderBackend, BackendConstraintException, BackendNotFoundException, BackendAlreadyExistsException
 from canteen_preorder.common import Category, Meal, User, Order
 
 def testing_backend() -> PreorderBackend:
@@ -35,7 +35,7 @@ def test_backend_login_user():
 def test_backend_create_user_twice():
     backend = testing_backend()
     backend.create_user("test_user", "test_user@gmail.com", "test123pass", True)
-    with pytest.raises(sqlite3.IntegrityError):
+    with pytest.raises(BackendAlreadyExistsException):
         backend.create_user("test_user", "test_user@gmail.com", "differentpass", False)
 
 def test_backend_wrong_login():
@@ -80,7 +80,7 @@ def test_backend_create_meal():
 def test_backend_create_meal_twice():
     backend = testing_backend()
     backend.create_meal("Fruit Salad", 820, Category.SNACK, 2)
-    with pytest.raises(sqlite3.IntegrityError):
+    with pytest.raises(BackendAlreadyExistsException):
         backend.create_meal("Fruit Salad", 810, Category.LUNCH, 3)
 
 def test_backend_get_meals():
