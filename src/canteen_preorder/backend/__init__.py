@@ -209,6 +209,8 @@ class PreorderBackend:
             self.db.commit()
     
     def __internal_update_meal_stock(self, cur: Cursor, meal_id: Id, stock: int) -> None:
+        if stock <= 0:
+            raise BackendConstraintException("stock needs to be positive")
         # update stock in a row of meals of which the id is meal_id
         cur.execute("update meals set stock = ? where id = ?", (stock, meal_id))
         # if no rows have been changed, no meal has been modified, so there's no meal with meal_id
@@ -226,6 +228,8 @@ class PreorderBackend:
             self.db.commit()
     
     def __internal_update_meal_cost(self, cur: Cursor, meal_id: Id, cost: Cost) -> None:
+        if cost <= 0:
+            raise BackendConstraintException("cost needs to be positive")
         # update cost in a row of meals of which the id is meal_id
         cur.execute("update meals set cost = ? where id = ?", (cost, meal_id))
         # if no rows have been changed, no meal has been modified, so there's no meal with meal_id
