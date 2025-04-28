@@ -3,7 +3,7 @@ from enum import Enum
 
 type Id = int
 type Cost = int
-type OrderItem = tuple(Id, int)
+type OrderItem = tuple[Id, int]
 
 class User(NamedTuple):
     user_id: Id
