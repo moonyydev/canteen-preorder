@@ -80,11 +80,16 @@ class PreorderBackend:
     
     def get_user(self, user_id: Id) -> Optional[User]:
         cur = self.db.cursor()
+        user = self.__internal_get_user(cur, user_id)
+        self.db.commit()
+        return user
+        
+
+    def __internal_get_user(self, cur: Cursor, user_id: Id) -> Optional[User]:
         # get the user data with specified id
         res = cur.execute("select id, name, email, staff from users where id = ?", (user_id, ))
         # get ONE result from the result set
         data = res.fetchone()
-        self.db.commit()
         # if we didn't get any data, the user doesn't exist, return None
         if data is None:
             return None
