@@ -187,3 +187,23 @@ def test_backend_get_nonexistant_order():
     meal_testing_collection(backend)
     order_testing_collection(backend)
     assert backend.get_order(33) is None
+
+def test_backend_create_order_no_user():
+    backend = testing_backend()
+    meal_testing_collection(backend)
+    with pytest.raises(BackendNotFoundException):
+        backend.create_order(13, [(1, 2), (2, 1)])
+
+def test_backend_create_order_negative_quantity():
+    backend = testing_backend()
+    meal_testing_collection(backend)
+    user_testing_collection(backend)
+    with pytest.raises(BackendConstraintException):
+        backend.create_order(1, [(1, -3)])
+
+def test_backend_create_order_zero_quantity():
+    backend = testing_backend()
+    meal_testing_collection(backend)
+    user_testing_collection(backend)
+    with pytest.raises(BackendConstraintException):
+        backend.create_order(1, [(1, 0)])
