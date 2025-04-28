@@ -39,10 +39,15 @@ update the stock field of a meal with id `meal_id` to `stock`,
 
 this function raises `BackendNotFoundException` if there's no meal with id `meal_id`
 
+this function raises `BackendConstraintException` if the stock is negative
+
     def update_meal_cost(self, meal_id: Id, cost: Cost) -> None
 update the cost field of a meal with id `meal_id` to `cost`,
 
 this function raises `BackendNotFoundException` if there's no meal with id `meal_id`
+
+this function raises `BackendConstraintException` if the cost is not positive
+
 
     def update_meal_availability(self, meal_id: Id, available: bool = False) -> None
 update the availability attribute of a meal with id `meal_id` to `available`,
