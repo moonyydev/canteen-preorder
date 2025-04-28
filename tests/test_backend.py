@@ -207,3 +207,62 @@ def test_backend_create_order_zero_quantity():
     user_testing_collection(backend)
     with pytest.raises(BackendConstraintException):
         backend.create_order(1, [(1, 0)])
+
+def test_backend_create_order_atomicity():
+    backend = testing_backend()
+    meals_expected = meal_testing_collection(backend)
+    user_testing_collection(backend)
+
+    try:
+        backend.create_order(2, [(1, 1), (3, 82)])
+    except: pass
+    assert backend.get_meals() == meals_expected
+
+    try:
+        backend.create_order(18, [(1, 1), (3, 1)])
+    except: pass
+    assert backend.get_meals() == meals_expected
+
+    try:
+        backend.create_order(1, [(3, -2), (1, -15)])
+    except: pass
+    assert backend.get_meals() == meals_expected
+
+def test_backend_update_meal_atomicity():
+    backend = testing_backend()
+    meals_expected = meal_testing_collection(backend)
+
+    try:
+        backend.update_meal_cost(8, 310)
+    except: pass
+    assert meals_expected == backend.get_meals()
+
+    try:
+        backend.update_meal_stock(9, 3)
+    except: pass
+    assert meals_expected == backend.get_meals()
+    
+    try:
+        backend.update_meal_availability(9)
+    except: pass
+    assert meals_expected == backend.get_meals()
+
+    try:
+        backend.update_meal_cost(1, -50)
+    except: pass
+    assert meals_expected == backend.get_meals()
+
+    try:
+        backend.update_meal_cost(2, 0)
+    except: pass
+    assert meals_expected == backend.get_meals()
+
+    try:
+        backend.update_meal_stock(1, -9)
+    except: pass
+    assert meals_expected == backend.get_meals()
+
+    try:
+        backend.update_meal_stock(3, 0)
+    except: pass
+    assert meals_expected == backend.get_meals()
