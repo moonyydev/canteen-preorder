@@ -50,140 +50,197 @@ class PreorderBackend:
     # USERS
     def login(self, email: str, password: str) -> Optional[User]:
         cur = self.db.cursor()
+        # find the user by email
         res = cur.execute("select id, name, email, staff, password from users where email = ?", (email, ))
+        # get ONE result from the result set
         data = res.fetchone()
+        # if user isn't found, return None
         if data is None:
             return None
+        # verify may return a mismatch exception if the password is wrong
         try:
+            # compared the stored hash with the password
             self.hasher.verify(data[4], password)
         except argon2.exceptions.VerifyMismatchError:
             return None
         self.db.commit()
+        # assemble User object
         return self.__user(data[0:4])
 
 
     def __user(self, row: tuple[int, str, str, int]) -> User:
+        # row is (id, name, email, staff (1 if true, 0 if false))
         return User(row[0], row[1], row[2], row[3] > 0)
     
     def get_user(self, user_id: Id) -> Optional[User]:
         cur = self.db.cursor()
+        # get the user data with specified id
         res = cur.execute("select id, name, email, staff from users where id = ?", (user_id, ))
+        # get ONE result from the result set
         data = res.fetchone()
         self.db.commit()
+        # if we didn't get any data, the user doesn't exist, return None
         if data is None:
             return None
+        # assemble User object
         return self.__user(data)
 
     # Staff Only
     def get_users(self) -> list[User]:
         cur = self.db.cursor()
+        # get all users
         res = cur.execute("select id, name, email, staff from users")
+        # fetch ALL of the results
         data = res.fetchall()
         self.db.commit()
+        # go through all of the users in data, and assemble them into User objects
         return [self.__user(user) for user in data]
 
     def create_user(self, name: str, email: str, password: str, staff: bool = False) -> User:
         cur = self.db.cursor()
+        # create hash from the password passed in in the arguments
+        # we hash the password so that you cannot just check the user's password in the database
+        # because it's unsafe
         password_hash = self.hasher.hash(password)
         try:
+            # insert the user into users, and return said user row data
             res = cur.execute("insert into users (name, email, password, staff) values (?, ?, ?, ?) returning id, name, email, staff", (name, email, password_hash, staff if 1 else 0))
         except sqlite3.IntegrityError:
             raise BackendAlreadyExistsException("user with this name or email already exists")
+        # fetch ONE results from the result set
         data = res.fetchone()
         self.db.commit()
+        # assemble into User object
         return self.__user(data)
     
     # MEALS
     def __meal(self, row: tuple[int, str, int, int, int, int]) -> Meal:
+        # row is (id, name, cost, category, stock, available (1 if True, 0 if False))
         return Meal(row[0], row[1], row[2], Category(row[3]), row[4], row[5] > 0)
 
     def get_meals(self) -> list[Meal]:
         cur = self.db.cursor()
+        # get all meals
         res = cur.execute("select id, name, cost, category, stock, available from meals")
+        # fetch ALL results in the result set
         data = res.fetchall()
         self.db.commit()
+        # go through all of the meals in data, and assemble them into Meal objects
         return [self.__meal(meal) for meal in data]
 
     def get_meal(self, meal_id: Id) -> Optional[Meal]:
         cur = self.db.cursor()
+        # get the data of a meal that has id meal_id
         res = cur.execute("select id, name, cost, category, stock, available from meals where id = ?", (meal_id, ))
+        # fetch ONE result from the result set
         data = res.fetchone()
         self.db.commit()
+        # if we didn't get any data, there's no meal matching the id, so return None
         if data is None:
             return None
+        # assemble Meal object
         return self.__meal(data)
 
     # Staff Only
     def create_meal(self, name: str, cost: Cost, category: Category, stock: int, available: bool = True) -> Meal:
         cur = self.db.cursor()
         try:
+            # insert into meals, returning said meal's data
             res = cur.execute("insert into meals (name, cost, category, stock, available) values (?, ?, ?, ?, ?) returning *", (name, cost, category.value, stock, available if 1 else 0))
         except sqlite3.IntegrityError:
             raise BackendAlreadyExistsException("meal with this name already exists in the database")
+        # fetch ONE result from the result set
         data = res.fetchone()
         self.db.commit()
+        # assemble Meal object
         return self.__meal(data)
 
     def update_meal_stock(self, meal_id: Id, stock: int) -> None:
         cur = self.db.cursor()
+        # update stock in a row of meals of which the id is meal_id
         cur.execute("update meals set stock = ? where id = ?", (stock, meal_id))
+        # if no rows have been changed, no meal has been modified, so there's no meal with meal_id
         if cur.rowcount == 0:
             raise BackendNotFoundException("meal does not exist")
         self.db.commit()
 
     def update_meal_cost(self, meal_id: Id, cost: Cost) -> None:
         cur = self.db.cursor()
+        # update cost in a row of meals of which the id is meal_id
         cur.execute("update meals set cost = ? where id = ?", (cost, meal_id))
+        # if no rows have been changed, no meal has been modified, so there's no meal with meal_id
         if cur.rowcount == 0:
             raise BackendNotFoundException("meal does not exist")
         self.db.commit()
     
     def update_meal_availability(self, meal_id: Id, available: bool = False) -> None:
         cur = self.db.cursor()
+        # update available in a row of meals of which the id is meal_id
         cur.execute("update meals set available = ? where id = ?", (available if 1 else 0, meal_id))
+        # if no rows have been changed, no meal has been modified, so there's no meal with meal_id
         if cur.rowcount == 0:
             raise BackendNotFoundException("meal does not exist")
         self.db.commit()
 
     # ORDERS
     def __order(self, row: tuple[int, int, int, str]) -> Order:
+        # row is (id, ordering user, order time, [(mmeal_id, quantity)] as json)
         items: list[OrderItem] = json.loads(row[3])
         return Order(row[0], row[1], row[2], items)
 
     def get_orders(self) -> list[Order]:
         cur = self.db.cursor()
+        # get all orders
         res = cur.execute("select id, user, order_time, data from orders")
+        # fetch all the results from the result set
         data = res.fetchall()
         self.db.commit()
+        # go through the all of the orders in data and assemble them into Order objects
         return [self.__order(orders) for orders in data]
     
     def get_order(self, order_id: Id) -> Optional[Order]:
         cur = self.db.cursor()
+        # get order with id order_id
         res = cur.execute("select id, user, order_time, data from orders where id = ?", (order_id, ))
+        # fetch ONE result from the result set
         data = res.fetchone()
         self.db.commit()
+        # if we didn't get any data, there's no order matching the id, return None
         if data is None:
             return None
+        # assemble Order object
         return self.__order(data)
 
     def create_order(self, user_id: Id, items: list[OrderItem]) -> Order:
+        # check if the user exists
         if self.get_user(user_id) is None:
             raise BackendNotFoundException("user does not exist")
+        # turn items into a string with json
         items_str = json.dumps(items)
+        # get current unix timestamp
         order_time = int(time.time())
         cur = self.db.cursor()
+        # insert order, returning the order's id
         res = cur.execute("insert into orders (user, order_time, data) values (?, ?, ?) returning id", (user_id, order_time, items_str))
+        # fetch one result from the result set and get the 1st field
         order_id: int = res.fetchone()[0]
         self.db.commit()
+        # go through all items and deduct the order quantity from the stock
         for (item, quantity) in items:
+            # if quantity is not positive, raise constraint exception
             if quantity <= 0:
                 raise BackendConstraintException("quantity must be positive")
+            # get meal with id of the item
             meal = self.get_meal(item)
+            # if there's no meal with that id, raise not found exception
             if meal is None:
                 raise BackendNotFoundException("meal does not exist")
+            # if the stock is smaller than the quantity, raise constraint exception
             if meal.stock < quantity:
                 raise BackendConstraintException("less stock than order quantity")
+            # update the meal's stock
             self.update_meal_stock(meal.meal_id, meal.stock - quantity)
+        # assemble Order object
         return self.__order((order_id, user_id, order_time, items_str))
 
 class BackendNotFoundException(Exception):
