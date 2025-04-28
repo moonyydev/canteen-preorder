@@ -114,9 +114,14 @@ class PreorderBackend:
 
     def create_user(self, name: str, email: str, password: str, staff: bool = False) -> User:
         cur = self.db.cursor()
-        user = self.__internal_create_user(cur, name, email, password, staff)
-        self.db.commit()
-        return user
+        try:
+            user = self.__internal_create_user(cur, name, email, password, staff)
+        except Exception as e:
+            self.db.rollback()
+            raise e
+        else: 
+            self.db.commit()
+            return user
         
     def __internal_create_user(self, cur: Cursor, name: str, email: str, password: str, staff: bool = False) -> User:
         # create hash from the password passed in in the arguments
@@ -173,9 +178,14 @@ class PreorderBackend:
     # Staff Only
     def create_meal(self, name: str, cost: Cost, category: Category, stock: int, available: bool = True) -> Meal:
         cur = self.db.cursor()
-        meal = self.__internal_create_meal(cur, name, cost, category, stock, available)
-        self.db.commit()
-        return meal
+        try:
+            meal = self.__internal_create_meal(cur, name, cost, category, stock, available)
+        except Exception as e:
+            self.db.rollback()
+            raise e
+        else:
+            self.db.commit()
+            return meal
 
     def __internal_create_meal(self, cur: Cursor, name: str, cost: Cost, category: Category, stock: int, available: bool = True) -> Meal:
         try:
@@ -190,8 +200,13 @@ class PreorderBackend:
 
     def update_meal_stock(self, meal_id: Id, stock: int) -> None:
         cur = self.db.cursor()
-        self.__internal_update_meal_stock(cur, meal_id, stock)
-        self.db.commit()
+        try:
+            self.__internal_update_meal_stock(cur, meal_id, stock)
+        except Exception as e:
+            self.db.rollback()
+            raise e
+        else:
+            self.db.commit()
     
     def __internal_update_meal_stock(self, cur: Cursor, meal_id: Id, stock: int) -> None:
         # update stock in a row of meals of which the id is meal_id
@@ -202,8 +217,13 @@ class PreorderBackend:
 
     def update_meal_cost(self, meal_id: Id, cost: Cost) -> None:
         cur = self.db.cursor()
-        self.__internal_update_meal_cost(cur, meal_id, cost)
-        self.db.commit()
+        try:
+            self.__internal_update_meal_cost(cur, meal_id, cost)
+        except Exception as e:
+            self.db.rollback()
+            raise e
+        else:
+            self.db.commit()
     
     def __internal_update_meal_cost(self, cur: Cursor, meal_id: Id, cost: Cost) -> None:
         # update cost in a row of meals of which the id is meal_id
@@ -214,8 +234,13 @@ class PreorderBackend:
     
     def update_meal_availability(self, meal_id: Id, available: bool = False) -> None:
         cur = self.db.cursor()
-        self.__internal_update_meal_availability(cur, meal_id, available)
-        self.db.commit()
+        try:
+            self.__internal_update_meal_availability(cur, meal_id, available)
+        except Exception as e:
+            self.db.rollback()
+            raise e
+        else:
+            self.db.commit()
 
     def __internal_update_meal_availability(self, cur: Cursor, meal_id: Id, available: bool = False) -> None:
         # update available in a row of meals of which the id is meal_id
@@ -263,9 +288,14 @@ class PreorderBackend:
 
     def create_order(self, user_id: Id, items: list[OrderItem]) -> Order:
         cur = self.db.cursor()
-        order = self.__internal_create_order(cur, user_id, items)
-        self.db.commit()
-        return order
+        try:
+            order = self.__internal_create_order(cur, user_id, items)
+        except Exception as e:
+            self.db.rollback()
+            raise e
+        else:
+            self.db.commit()
+            return order
         
 
     def __internal_create_order(self, cur: Cursor, user_id: Id, items: list[OrderItem]) -> Order:
