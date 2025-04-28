@@ -1,4 +1,5 @@
 import sqlite3
+from sqlite3 import Cursor
 import json
 import time
 from argon2 import PasswordHasher
@@ -50,6 +51,12 @@ class PreorderBackend:
     # USERS
     def login(self, email: str, password: str) -> Optional[User]:
         cur = self.db.cursor()
+        user = self.__internal_login(cur, email, password)
+        self.db.commit()
+        return user
+        
+
+    def __internal_login(self, cur: Cursor, email: str, password: str) -> Optional[User]:
         # find the user by email
         res = cur.execute("select id, name, email, staff, password from users where email = ?", (email, ))
         # get ONE result from the result set
@@ -63,7 +70,6 @@ class PreorderBackend:
             self.hasher.verify(data[4], password)
         except argon2.exceptions.VerifyMismatchError:
             return None
-        self.db.commit()
         # assemble User object
         return self.__user(data[0:4])
 
