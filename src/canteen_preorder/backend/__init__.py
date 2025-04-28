@@ -161,6 +161,8 @@ class PreorderBackend:
         return self.__order(data)
 
     def create_order(self, user_id: Id, items: list[OrderItem]) -> Order:
+        if self.get_user(user_id) is None:
+            raise BackendNotFoundException("user does not exist")
         items_str = json.dumps(items)
         order_time = int(time.time())
         cur = self.db.cursor()
