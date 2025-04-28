@@ -232,11 +232,15 @@ class PreorderBackend:
 
     def get_orders(self) -> list[Order]:
         cur = self.db.cursor()
+        orders = self.__internal_get_orders(cur)
+        self.db.commit()
+        return orders
+        
+    def __internal_get_orders(self, cur: Cursor) -> list[Order]:
         # get all orders
         res = cur.execute("select id, user, order_time, data from orders")
         # fetch all the results from the result set
         data = res.fetchall()
-        self.db.commit()
         # go through the all of the orders in data and assemble them into Order objects
         return [self.__order(orders) for orders in data]
     
