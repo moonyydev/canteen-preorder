@@ -155,11 +155,15 @@ class PreorderBackend:
 
     def get_meal(self, meal_id: Id) -> Optional[Meal]:
         cur = self.db.cursor()
+        meal = self.__internal_get_meal(cur, meal_id)
+        self.db.commit()
+        return meal
+        
+    def __internal_get_meal(self, cur: Cursor, meal_id: Id) -> Optional[Meal]:
         # get the data of a meal that has id meal_id
         res = cur.execute("select id, name, cost, category, stock, available from meals where id = ?", (meal_id, ))
         # fetch ONE result from the result set
         data = res.fetchone()
-        self.db.commit()
         # if we didn't get any data, there's no meal matching the id, so return None
         if data is None:
             return None
