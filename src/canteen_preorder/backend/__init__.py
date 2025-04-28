@@ -50,8 +50,10 @@ class PreorderBackend:
 
     # USERS
     def login(self, email: str, password: str) -> Optional[User]:
+        # open transaction
         cur = self.db.cursor()
         user = self.__internal_login(cur, email, password)
+        # commit transaction, function is read only, thus, safe
         self.db.commit()
         return user
         
@@ -79,8 +81,10 @@ class PreorderBackend:
         return User(row[0], row[1], row[2], row[3] > 0)
     
     def get_user(self, user_id: Id) -> Optional[User]:
+        # open transaction
         cur = self.db.cursor()
         user = self.__internal_get_user(cur, user_id)
+        # commit transaction, function is read only, thus, safe
         self.db.commit()
         return user
         
@@ -98,8 +102,10 @@ class PreorderBackend:
 
     # Staff Only
     def get_users(self) -> list[User]:
+        # open transaction
         cur = self.db.cursor()
         users = self.__internal_get_users(cur)
+        # commit transaction, function is read only, thus, safe
         self.db.commit()
         return users
 
@@ -113,13 +119,16 @@ class PreorderBackend:
         return [self.__user(user) for user in data]
 
     def create_user(self, name: str, email: str, password: str, staff: bool = False) -> User:
+        # open transaction
         cur = self.db.cursor()
         try:
             user = self.__internal_create_user(cur, name, email, password, staff)
         except Exception as e:
+            # internal errored, rollback current transaction so the db doesn't get corrupted
             self.db.rollback()
             raise e
         else: 
+            # the function ran correctly, commit transaction
             self.db.commit()
             return user
         
@@ -144,8 +153,10 @@ class PreorderBackend:
         return Meal(row[0], row[1], row[2], Category(row[3]), row[4], row[5] > 0)
 
     def get_meals(self) -> list[Meal]:
+        # open transaction
         cur = self.db.cursor()
         meals = self.__internal_get_meals(cur)
+        # commit transaction, function is read only, thus, safe
         self.db.commit()
         return meals
 
@@ -159,8 +170,10 @@ class PreorderBackend:
         return [self.__meal(meal) for meal in data]
 
     def get_meal(self, meal_id: Id) -> Optional[Meal]:
+        # open transaction
         cur = self.db.cursor()
         meal = self.__internal_get_meal(cur, meal_id)
+        # commit transaction, function is read only, thus, safe
         self.db.commit()
         return meal
         
@@ -177,13 +190,16 @@ class PreorderBackend:
 
     # Staff Only
     def create_meal(self, name: str, cost: Cost, category: Category, stock: int, available: bool = True) -> Meal:
+        # open transaction
         cur = self.db.cursor()
         try:
             meal = self.__internal_create_meal(cur, name, cost, category, stock, available)
         except Exception as e:
+            # internal errored, rollback current transaction so the db doesn't get corrupted
             self.db.rollback()
             raise e
         else:
+            # the function ran correctly, commit transaction
             self.db.commit()
             return meal
 
@@ -199,13 +215,16 @@ class PreorderBackend:
         return self.__meal(data)
 
     def update_meal_stock(self, meal_id: Id, stock: int) -> None:
+        # open transaction
         cur = self.db.cursor()
         try:
             self.__internal_update_meal_stock(cur, meal_id, stock)
         except Exception as e:
+            # internal errored, rollback current transaction so the db doesn't get corrupted
             self.db.rollback()
             raise e
         else:
+            # the function ran correctly, commit transaction
             self.db.commit()
     
     def __internal_update_meal_stock(self, cur: Cursor, meal_id: Id, stock: int) -> None:
@@ -218,13 +237,16 @@ class PreorderBackend:
             raise BackendNotFoundException("meal does not exist")
 
     def update_meal_cost(self, meal_id: Id, cost: Cost) -> None:
+        # open transaction
         cur = self.db.cursor()
         try:
             self.__internal_update_meal_cost(cur, meal_id, cost)
         except Exception as e:
+            # internal errored, rollback current transaction so the db doesn't get corrupted
             self.db.rollback()
             raise e
         else:
+            # the function ran correctly, commit transaction
             self.db.commit()
     
     def __internal_update_meal_cost(self, cur: Cursor, meal_id: Id, cost: Cost) -> None:
@@ -237,13 +259,16 @@ class PreorderBackend:
             raise BackendNotFoundException("meal does not exist")
     
     def update_meal_availability(self, meal_id: Id, available: bool = False) -> None:
+        # open transaction
         cur = self.db.cursor()
         try:
             self.__internal_update_meal_availability(cur, meal_id, available)
         except Exception as e:
+            # internal errored, rollback current transaction so the db doesn't get corrupted
             self.db.rollback()
             raise e
         else:
+            # the function ran correctly, commit transaction
             self.db.commit()
 
     def __internal_update_meal_availability(self, cur: Cursor, meal_id: Id, available: bool = False) -> None:
@@ -260,8 +285,10 @@ class PreorderBackend:
         return Order(row[0], row[1], row[2], items)
 
     def get_orders(self) -> list[Order]:
+        # open transaction
         cur = self.db.cursor()
         orders = self.__internal_get_orders(cur)
+        # commit transaction, function is read only, thus, safe
         self.db.commit()
         return orders
         
@@ -274,8 +301,10 @@ class PreorderBackend:
         return [self.__order(orders) for orders in data]
     
     def get_order(self, order_id: Id) -> Optional[Order]:
+        # open transaction
         cur = self.db.cursor()
         order = self.__internal_get_order(cur, order_id)
+        # commit transaction, function is read only, thus, safe
         self.db.commit()
         return order
         
@@ -291,13 +320,16 @@ class PreorderBackend:
         return self.__order(data)
 
     def create_order(self, user_id: Id, items: list[OrderItem]) -> Order:
+        # open transaction
         cur = self.db.cursor()
         try:
             order = self.__internal_create_order(cur, user_id, items)
         except Exception as e:
+            # internal errored, rollback current transaction so the db doesn't get corrupted
             self.db.rollback()
             raise e
         else:
+            # the function ran correctly, commit transaction
             self.db.commit()
             return order
         
