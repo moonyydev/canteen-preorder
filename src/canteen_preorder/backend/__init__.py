@@ -140,11 +140,16 @@ class PreorderBackend:
 
     def get_meals(self) -> list[Meal]:
         cur = self.db.cursor()
+        meals = self.__internal_get_meals(cur)
+        self.db.commit()
+        return meals
+
+        
+    def __internal_get_meals(self, cur: Cursor) -> list[Meal]:
         # get all meals
         res = cur.execute("select id, name, cost, category, stock, available from meals")
         # fetch ALL results in the result set
         data = res.fetchall()
-        self.db.commit()
         # go through all of the meals in data, and assemble them into Meal objects
         return [self.__meal(meal) for meal in data]
 
