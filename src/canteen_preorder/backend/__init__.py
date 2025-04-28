@@ -173,6 +173,11 @@ class PreorderBackend:
     # Staff Only
     def create_meal(self, name: str, cost: Cost, category: Category, stock: int, available: bool = True) -> Meal:
         cur = self.db.cursor()
+        meal = self.__internal_create_meal(cur, name, cost, category, stock, available)
+        self.db.commit()
+        return meal
+
+    def __internal_create_meal(self, cur: Cursor, name: str, cost: Cost, category: Category, stock: int, available: bool = True) -> Meal:
         try:
             # insert into meals, returning said meal's data
             res = cur.execute("insert into meals (name, cost, category, stock, available) values (?, ?, ?, ?, ?) returning *", (name, cost, category.value, stock, available if 1 else 0))
@@ -180,7 +185,6 @@ class PreorderBackend:
             raise BackendAlreadyExistsException("meal with this name already exists in the database")
         # fetch ONE result from the result set
         data = res.fetchone()
-        self.db.commit()
         # assemble Meal object
         return self.__meal(data)
 
