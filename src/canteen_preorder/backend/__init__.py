@@ -114,6 +114,11 @@ class PreorderBackend:
 
     def create_user(self, name: str, email: str, password: str, staff: bool = False) -> User:
         cur = self.db.cursor()
+        user = self.__internal_create_user(cur, name, email, password, staff)
+        self.db.commit()
+        return user
+        
+    def __internal_create_user(self, cur: Cursor, name: str, email: str, password: str, staff: bool = False) -> User:
         # create hash from the password passed in in the arguments
         # we hash the password so that you cannot just check the user's password in the database
         # because it's unsafe
@@ -125,10 +130,9 @@ class PreorderBackend:
             raise BackendAlreadyExistsException("user with this name or email already exists")
         # fetch ONE results from the result set
         data = res.fetchone()
-        self.db.commit()
         # assemble into User object
         return self.__user(data)
-    
+
     # MEALS
     def __meal(self, row: tuple[int, str, int, int, int, int]) -> Meal:
         # row is (id, name, cost, category, stock, available (1 if True, 0 if False))
