@@ -170,6 +170,8 @@ class PreorderBackend:
         order_id: int = res.fetchone()[0]
         self.db.commit()
         for (item, quantity) in items:
+            if quantity <= 0:
+                raise BackendConstraintException("quantity must be positive")
             meal = self.get_meal(item)
             if meal is None:
                 raise BackendNotFoundException("meal does not exist")
