@@ -141,7 +141,7 @@ class PreorderBackend:
             # insert the user into users, and return said user row data
             res = cur.execute("insert into users (name, email, password, staff) values (?, ?, ?, ?) returning id, name, email, staff", (name, email, password_hash, staff if 1 else 0))
         except sqlite3.IntegrityError:
-            raise BackendAlreadyExistsException("user with this name or email already exists")
+            raise AlreadyExistsError("user with this name or email already exists")
         # fetch ONE results from the result set
         data = res.fetchone()
         # assemble into User object
@@ -208,7 +208,7 @@ class PreorderBackend:
             # insert into meals, returning said meal's data
             res = cur.execute("insert into meals (name, cost, category, stock, available) values (?, ?, ?, ?, ?) returning *", (name, cost, category.value, stock, available if 1 else 0))
         except sqlite3.IntegrityError:
-            raise BackendAlreadyExistsException("meal with this name already exists in the database")
+            raise AlreadyExistsError("meal with this name already exists in the database")
         # fetch ONE result from the result set
         data = res.fetchone()
         # assemble Meal object
@@ -229,12 +229,12 @@ class PreorderBackend:
     
     def __internal_update_meal_stock(self, cur: Cursor, meal_id: Id, stock: int) -> None:
         if stock < 0:
-            raise BackendConstraintException("stock needs to be positive")
+            raise ConstraintError("stock needs to be positive")
         # update stock in a row of meals of which the id is meal_id
         cur.execute("update meals set stock = ? where id = ?", (stock, meal_id))
         # if no rows have been changed, no meal has been modified, so there's no meal with meal_id
         if cur.rowcount == 0:
-            raise BackendNotFoundException("meal does not exist")
+            raise NotFoundError("meal does not exist")
 
     def update_meal_cost(self, meal_id: Id, cost: Cost) -> None:
         # open transaction
@@ -251,12 +251,12 @@ class PreorderBackend:
     
     def __internal_update_meal_cost(self, cur: Cursor, meal_id: Id, cost: Cost) -> None:
         if cost <= 0:
-            raise BackendConstraintException("cost needs to be positive")
+            raise ConstraintError("cost needs to be positive")
         # update cost in a row of meals of which the id is meal_id
         cur.execute("update meals set cost = ? where id = ?", (cost, meal_id))
         # if no rows have been changed, no meal has been modified, so there's no meal with meal_id
         if cur.rowcount == 0:
-            raise BackendNotFoundException("meal does not exist")
+            raise NotFoundError("meal does not exist")
     
     def update_meal_availability(self, meal_id: Id, available: bool = False) -> None:
         # open transaction
@@ -276,7 +276,7 @@ class PreorderBackend:
         cur.execute("update meals set available = ? where id = ?", (available if 1 else 0, meal_id))
         # if no rows have been changed, no meal has been modified, so there's no meal with meal_id
         if cur.rowcount == 0:
-            raise BackendNotFoundException("meal does not exist")
+            raise NotFoundError("meal does not exist")
 
     # ORDERS
     def __order(self, row: tuple[int, int, int, str]) -> Order:
@@ -337,7 +337,7 @@ class PreorderBackend:
     def __internal_create_order(self, cur: Cursor, user_id: Id, items: list[OrderItem]) -> Order:
         # check if the user exists
         if self.__internal_get_user(cur, user_id) is None:
-            raise BackendNotFoundException("user does not exist")
+            raise NotFoundError("user does not exist")
         # turn items into a string with json
         items_str = json.dumps(items)
         # get current unix timestamp
@@ -350,25 +350,25 @@ class PreorderBackend:
         for (item, quantity) in items:
             # if quantity is not positive, raise constraint exception
             if quantity <= 0:
-                raise BackendConstraintException("quantity must be positive")
+                raise ConstraintError("quantity must be positive")
             # get meal with id of the item
             meal = self.__internal_get_meal(cur, item)
             # if there's no meal with that id, raise not found exception
             if meal is None:
-                raise BackendNotFoundException("meal does not exist")
+                raise NotFoundError("meal does not exist")
             # if the stock is smaller than the quantity, raise constraint exception
             if meal.stock < quantity:
-                raise BackendConstraintException("less stock than order quantity")
+                raise ConstraintError("less stock than order quantity")
             # update the meal's stock
             self.__internal_update_meal_stock(cur, meal.meal_id, meal.stock - quantity)
         # assemble Order object
         return self.__order((order_id, user_id, order_time, items_str))
 
-class BackendNotFoundException(Exception):
+class NotFoundError(Exception):
     pass
 
-class BackendConstraintException(Exception):
+class ConstraintError(Exception):
     pass
 
-class BackendAlreadyExistsException(Exception):
+class AlreadyExistsError(Exception):
     pass
