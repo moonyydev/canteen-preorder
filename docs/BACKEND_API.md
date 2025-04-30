@@ -55,7 +55,7 @@ update the availability attribute of a meal with id `meal_id` to `available`,
 this function raises `BackendNotFoundException` if there's no meal with id `meal_id`
 
 # ORDERS
-    def create_order(self, user_id: Id, items: list[OrderItem]) -> Order
+    def create_order(self, user_id: Id, items: list[tuple[Id, int /* quantity */]]) -> Order
 create order with user id `user_id`, items `items`, current time as timestamp, it will also deduct the ordered quantity from the stock of the ordered items
 
 this function raises `BackendNotFoundException` if any of the meals in the order items aren't found,

@@ -3,7 +3,7 @@ from enum import Enum
 
 type Id = int # the id of an object (in the database)
 type Cost = int # 2-point fixed decimal cost, eg. 100 is 1.00, 451 is 4.51
-type OrderItem = tuple[Id, int] # the id of a meal ordered and the quantity
+type OrderItem = tuple[Id, int, Cost] # the id of a meal ordered, the quantity, and the cost a piece at the time of the order
 
 class User(NamedTuple):
     user_id: Id

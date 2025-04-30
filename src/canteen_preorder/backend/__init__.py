@@ -320,7 +320,7 @@ class PreorderBackend:
         # assemble Order object
         return self.__order(data)
 
-    def create_order(self, user_id: Id, items: list[OrderItem]) -> Order:
+    def create_order(self, user_id: Id, items: list[tuple[Id, int]]) -> Order:
         # open transaction
         cur = self.db.cursor()
         try:
@@ -335,19 +335,14 @@ class PreorderBackend:
             return order
         
 
-    def __internal_create_order(self, cur: Cursor, user_id: Id, items: list[OrderItem]) -> Order:
+    def __internal_create_order(self, cur: Cursor, user_id: Id, items: list[tuple[Id, int]]) -> Order:
         # check if the user exists
         if self.__internal_get_user(cur, user_id) is None:
             raise NotFoundError("user does not exist")
-        # turn items into a string with json
-        items_str = json.dumps(items)
         # get current unix timestamp
         order_time = int(time.time())
-        # insert order, returning the order's id
-        res = cur.execute("insert into orders (user, order_time, data) values (?, ?, ?) returning id", (user_id, order_time, items_str))
-        # fetch one result from the result set and get the 1st field
-        order_id: int = res.fetchone()[0]
         # go through all items and deduct the order quantity from the stock
+        final_items = []
         for (item, quantity) in items:
             # if quantity is not positive, raise constraint exception
             if quantity <= 0:
@@ -357,11 +352,18 @@ class PreorderBackend:
             # if there's no meal with that id, raise not found exception
             if meal is None:
                 raise NotFoundError("meal does not exist")
+            final_items.append((item, quantity, meal.cost))
             # if the stock is smaller than the quantity, raise constraint exception
             if meal.stock < quantity:
                 raise ConstraintError("less stock than order quantity")
             # update the meal's stock
             self.__internal_update_meal_stock(cur, meal.meal_id, meal.stock - quantity)
+        # turn items into a string with json
+        items_str = json.dumps(final_items)
+        # insert order, returning the order's id
+        res = cur.execute("insert into orders (user, order_time, data) values (?, ?, ?) returning id", (user_id, order_time, items_str))
+        # fetch one result from the result set and get the 1st field
+        order_id: int = res.fetchone()[0]
         # assemble Order object
         return self.__order((order_id, user_id, order_time, items_str))
 
