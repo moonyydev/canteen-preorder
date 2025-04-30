@@ -60,6 +60,7 @@ class PreorderBackend:
 
     def __internal_login(self, cur: Cursor, email: str, password: str) -> Optional[User]:
         # find the user by email
+        # password last so it can be excluded later by a simple splice index
         res = cur.execute("select id, name, email, staff, password from users where email = ?", (email, ))
         # get ONE result from the result set
         data = res.fetchone()
@@ -163,7 +164,7 @@ class PreorderBackend:
         
     def __internal_get_meals(self, cur: Cursor) -> list[Meal]:
         # get all meals
-        res = cur.execute("select id, name, cost, category, stock, available from meals")
+        res = cur.execute("select * from meals")
         # fetch ALL results in the result set
         data = res.fetchall()
         # go through all of the meals in data, and assemble them into Meal objects
@@ -179,7 +180,7 @@ class PreorderBackend:
         
     def __internal_get_meal(self, cur: Cursor, meal_id: Id) -> Optional[Meal]:
         # get the data of a meal that has id meal_id
-        res = cur.execute("select id, name, cost, category, stock, available from meals where id = ?", (meal_id, ))
+        res = cur.execute("select * from meals where id = ?", (meal_id, ))
         # fetch ONE result from the result set
         data = res.fetchone()
         # if we didn't get any data, there's no meal matching the id, so return None
@@ -294,7 +295,7 @@ class PreorderBackend:
         
     def __internal_get_orders(self, cur: Cursor) -> list[Order]:
         # get all orders
-        res = cur.execute("select id, user, order_time, data from orders")
+        res = cur.execute("select * from orders")
         # fetch all the results from the result set
         data = res.fetchall()
         # go through the all of the orders in data and assemble them into Order objects
@@ -310,7 +311,7 @@ class PreorderBackend:
         
     def __internal_get_order(self, cur: Cursor, order_id: Id) -> Optional[Order]:
         # get order with id order_id
-        res = cur.execute("select id, user, order_time, data from orders where id = ?", (order_id, ))
+        res = cur.execute("select * from orders where id = ?", (order_id, ))
         # fetch ONE result from the result set
         data = res.fetchone()
         # if we didn't get any data, there's no order matching the id, return None
