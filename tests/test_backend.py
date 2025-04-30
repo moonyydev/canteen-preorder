@@ -269,3 +269,12 @@ def test_backend_update_meal_atomicity():
     with pytest.raises(ConstraintError):
         backend.update_meal_stock(1, -9)
     assert meals_expected == backend.get_meals()
+
+def test_backend_order_total():
+    backend = testing_backend()
+    meals = meal_testing_collection(backend)
+    users = user_testing_collection(backend)
+    total = meals[0].cost + meals[1].cost * 3 + meals[3].cost * 2
+    order = backend.create_order(users[0].user_id, [(meals[0].meal_id, 1), (meals[1].meal_id, 3), (meals[3].meal_id, 2)])
+    costs = [item[2] * item[1] for item in order.items]
+    assert sum(costs) == total
