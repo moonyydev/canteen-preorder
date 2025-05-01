@@ -2,6 +2,14 @@
 
 **[SPECIFICATION](docs/SPECIFICATION.md)**
 
+## Development
+
+To run the frontend, run:
+`uv run main`
+
+To run all tests, run:
+`uv run pytest`
+
 ## The Tooling
 
 ### `uv`
