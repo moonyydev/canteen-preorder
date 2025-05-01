@@ -2,6 +2,19 @@
 
 **[SPECIFICATION](docs/SPECIFICATION.md)**
 
+## The Tooling
+
+### `uv`
+This project uses [`uv`](https://docs.astral.sh/uv/) ([Python developer tooling handbook reference](https://pydevtools.com/handbook/reference/uv/)), a package and project manager.
+
+`uv` is essential (but there are ofc other tools for it) for things from [package dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/) (and [dependency locking](https://docs.astral.sh/uv/concepts/projects/sync/)) and [package building](https://docs.astral.sh/uv/concepts/projects/build/) to [script running](https://docs.astral.sh/uv/guides/scripts/) and [venv (virtual environments)](https://docs.astral.sh/uv/concepts/projects/layout/#the-project-environment).
+
+### `git`
+We also use [`git`](https://git-scm.com/) for [version control](https://en.wikipedia.org/wiki/Version_control). `git` is an integral part of modern (circa 2012) software development. It allows for keeping a versioned log of the changes done to the project's source code and collaboration. Every change made to the source code is a "commit", basically a patch to the previous version, which is amazing for collaborative development, allowing developers to see when, how, and why a change was made. Our repository is hosted on [GitHub](https://github.com/), which it wouldn't if not for its widespread usage as GitHub is known for [exploiting its users](https://nogithub.codeberg.page/).
+
+### `pytest`
+This project also utilises [`pytest`](https://docs.pytest.org/en/stable/) as its testing framework to ensure proper execution.
+
 # Backend
 
 **[BACKEND API](docs/BACKEND_API.md)**
