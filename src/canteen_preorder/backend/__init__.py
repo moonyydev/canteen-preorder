@@ -22,7 +22,7 @@ class PreorderBackend:
             name text not null,
             email text not null unique,
             password text not null,
-            staff integer
+            staff integer not null
         );
         """)
 
