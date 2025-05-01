@@ -41,8 +41,7 @@ class PreorderBackend:
         create table if not exists orders (
             id integer primary key autoincrement,
             user integer not null,
-            order_time integer not null,
-            data text not null
+            order_time integer not null
         );
         """)
 
@@ -292,9 +291,8 @@ class PreorderBackend:
             raise NotFoundError("meal does not exist")
 
     # ORDERS
-    def __order(self, row: tuple[int, int, int, str]) -> Order:
-        # row is (id, ordering user, order time, [(mmeal_id, quantity)] as json)
-        items: list[OrderItem] = json.loads(row[3])
+    def __order(self, row: tuple[int, int, int], items: list[OrderItem]) -> Order:
+        # row is (id, ordering user, order time)
         return Order(row[0], row[1], row[2], items)
 
     def get_orders(self) -> list[Order]:
@@ -307,11 +305,11 @@ class PreorderBackend:
         
     def __internal_get_orders(self, cur: Cursor) -> list[Order]:
         # get all orders
-        res = cur.execute("select * from orders")
+        res = cur.execute("select id from orders")
         # fetch all the results from the result set
         data = res.fetchall()
         # go through the all of the orders in data and assemble them into Order objects
-        return [self.__order(orders) for orders in data]
+        return [self.get_order(order[0]) for order in data]
     
     def get_order(self, order_id: Id) -> Optional[Order]:
         # open transaction
@@ -323,14 +321,21 @@ class PreorderBackend:
         
     def __internal_get_order(self, cur: Cursor, order_id: Id) -> Optional[Order]:
         # get order with id order_id
-        res = cur.execute("select * from orders where id = ?", (order_id, ))
+        order_res = cur.execute("select * from orders where id = ?", (order_id, ))
         # fetch ONE result from the result set
-        data = res.fetchone()
+        order_data = order_res.fetchone()
         # if we didn't get any data, there's no order matching the id, return None
-        if data is None:
+        if order_data is None:
             return None
+        
+        items_res = cur.execute("select meal, quantity, cost from order_items where parent = ?", (order_id, ))
+
+        items_data = items_res.fetchall()
+
+        items: list[OrderItem] = [(item[0], item[1], item[2]) for item in items_data]
+
         # assemble Order object
-        return self.__order(data)
+        return self.__order(order_data, items)
 
     def create_order(self, user_id: Id, items: list[tuple[Id, int]]) -> Order:
         # open transaction
@@ -370,14 +375,14 @@ class PreorderBackend:
                 raise ConstraintError("less stock than order quantity")
             # update the meal's stock
             self.__internal_update_meal_stock(cur, meal.meal_id, meal.stock - quantity)
-        # turn items into a string with json
-        items_str = json.dumps(final_items)
         # insert order, returning the order's id
-        res = cur.execute("insert into orders (user, order_time, data) values (?, ?, ?) returning id", (user_id, order_time, items_str))
+        res = cur.execute("insert into orders (user, order_time) values (?, ?) returning id", (user_id, order_time))
         # fetch one result from the result set and get the 1st field
         order_id: int = res.fetchone()[0]
+        for (item, quantity, cost) in final_items:
+            cur.execute("insert into order_items (parent, meal, quantity, cost) values (?, ?, ?, ?)", (order_id, item, quantity, cost))
         # assemble Order object
-        return self.__order((order_id, user_id, order_time, items_str))
+        return self.__order((order_id, user_id, order_time), final_items)
 
 class NotFoundError(Exception):
     pass
