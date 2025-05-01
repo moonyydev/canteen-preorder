@@ -18,7 +18,7 @@ def test_backend_create_user():
     assert u2 == u2e
 
 def user_testing_collection(backend: PreorderBackend) -> list[User]:
-    users = []
+    users: list[User] = []
     users.append(backend.create_user("test_user", "test_user@gmail.com", "test123pass", True))
     users.append(backend.create_user("user2", "2nduser@gmail.com", "somepassword", False))
     users.append(backend.create_user("userthree", "userthethird@gmail.com", "wowpass", False))
@@ -61,7 +61,7 @@ def test_backend_get_nonexistant_user():
     assert backend.get_user(11) is None
 
 def meal_testing_collection(backend: PreorderBackend) -> list[Meal]:
-    meals = []
+    meals: list[Meal] = []
     meals.append(backend.create_meal("Fruit Salad", 820, Category.SNACK, 2))
     meals.append(backend.create_meal("Turkey Sandwich", 650, Category.LUNCH, 5))
     meals.append(backend.create_meal("Chicken Sandwich", 670, Category.LUNCH, 1))
@@ -157,7 +157,7 @@ def test_backend_update_nonexistant_meal_availability():
 
 def order_testing_collection(backend: PreorderBackend) -> list[Order]:
     users = [user.user_id for user in backend.get_users()]
-    orders = []
+    orders: list[Order] = []
     orders.append(backend.create_order(users[len(orders) % len(users)], [(1, 1), (2, 2)]))
     orders.append(backend.create_order(users[len(orders) % len(users)], [(2, 2), (4, 3)]))
     orders.append(backend.create_order(users[len(orders) % len(users)], [(3, 1), (1, 1)]))
