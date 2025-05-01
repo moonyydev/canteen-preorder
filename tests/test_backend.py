@@ -76,6 +76,7 @@ def test_backend_create_meal():
     assert m1 == m1e
     m2 = backend.create_meal("Chicken Sandwich", 670, Category.LUNCH, 1)
     m2e = Meal(m2.meal_id, "Chicken Sandwich", 670, Category.LUNCH, 1)
+    assert m2 == m2e
 
 def test_backend_create_meal_twice():
     backend = testing_backend()
