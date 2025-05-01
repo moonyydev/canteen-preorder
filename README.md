@@ -2,6 +2,18 @@
 
 **[SPECIFICATION](docs/SPECIFICATION.md)**
 
+## Contributing
+
+I will keep it simple, I don't wanna just throw 50 rules on you, this is just for convenience's sake.
+
+Please write concise commit messages.
+
+Please do not do many things in a commit, split it into many commits.
+
+Please add a prefix to your commit explaining what it touches on (e.g `docs: add get_order endpoint to backend API`, or `tests: add backend incorrect login test`).
+
+Thank you.
+
 ## Development
 
 To run the frontend, run:
