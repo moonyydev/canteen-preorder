@@ -46,6 +46,18 @@ class PreorderBackend:
         );
         """)
 
+        cur.execute("""
+        create table if not exists order_items (
+            id integer primary key autoincrement,
+            parent integer not null,
+            meal integer not null,
+            quantity integer not null,
+            cost integer not null,
+            foreign key (parent) references orders(id),
+            foreign key (meal) references meals(id)
+        );
+        """)
+
         self.db.commit()
 
     # USERS
