@@ -1,5 +1,4 @@
 import pytest
-import sqlite3
 from canteen_preorder.backend import PreorderBackend, ConstraintError, NotFoundError, AlreadyExistsError
 from canteen_preorder.common import Category, Meal, User, Order
 
