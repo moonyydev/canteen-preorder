@@ -168,7 +168,13 @@ def test_backend_create_order():
     backend = testing_backend()
     user_testing_collection(backend)
     meal_testing_collection(backend)
-    order_testing_collection(backend)
+    o1 = backend.create_order(3, [(1, 1), (4, 2)])
+    expected_order = Order(1, 3, o1.order_time,  [(1, 1, 820), (4, 2, 710)])
+    assert o1 == expected_order
+    o2 = backend.get_order(1)
+    assert o2 == expected_order
+    o3 = backend.get_orders()[0]
+    assert o3 == expected_order
 
 def test_backend_create_order_wrong_meal():
     backend = testing_backend()
