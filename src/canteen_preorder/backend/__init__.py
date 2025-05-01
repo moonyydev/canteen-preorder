@@ -22,7 +22,7 @@ class PreorderBackend:
             name text not null,
             email text not null unique,
             password text not null,
-            staff integer not null
+            staff integer not null default 0
         );
         """)
 
@@ -33,7 +33,7 @@ class PreorderBackend:
             cost integer not null,
             category integer not null,
             stock integer not null,
-            available integer not null
+            available integer not null default 1
         );
         """)
 
