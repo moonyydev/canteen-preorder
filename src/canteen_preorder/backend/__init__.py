@@ -1,6 +1,5 @@
 import sqlite3
 from sqlite3 import Cursor
-import json
 import time
 from argon2 import PasswordHasher
 import argon2
