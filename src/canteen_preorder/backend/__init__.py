@@ -308,7 +308,7 @@ class PreorderBackend:
         # fetch all the results from the result set
         data: list[tuple[int]] = res.fetchall()
         # go through the all of the orders in data and assemble them into Order objects
-        orders: list[Optional[Order]] = [self.get_order(order[0]) for order in data ]
+        orders: list[Optional[Order]] = [self.__internal_get_order(cur, order[0]) for order in data ]
         return [order for order in orders if order is not None]
     
     def get_order(self, order_id: Id) -> Optional[Order]:
