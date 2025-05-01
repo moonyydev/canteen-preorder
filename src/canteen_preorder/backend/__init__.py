@@ -307,9 +307,10 @@ class PreorderBackend:
         # get all orders
         res = cur.execute("select id from orders")
         # fetch all the results from the result set
-        data = res.fetchall()
+        data: list[tuple[int]] = res.fetchall()
         # go through the all of the orders in data and assemble them into Order objects
-        return [self.get_order(order[0]) for order in data]
+        orders: list[Optional[Order]] = [self.get_order(order[0]) for order in data ]
+        return [order for order in orders if order is not None]
     
     def get_order(self, order_id: Id) -> Optional[Order]:
         # open transaction
@@ -359,7 +360,7 @@ class PreorderBackend:
         # get current unix timestamp
         order_time = int(time.time())
         # go through all items and deduct the order quantity from the stock
-        final_items = []
+        final_items: list[OrderItem] = []
         for (item, quantity) in items:
             # if quantity is not positive, raise constraint exception
             if quantity <= 0:
