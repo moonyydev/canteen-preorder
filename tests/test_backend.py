@@ -47,7 +47,7 @@ def test_backend_wrong_login():
 def test_backend_get_users():
     backend = testing_backend()
     users = user_testing_collection(backend)
-    assert users == backend.get_users()
+    assert users == backend.get_users(True)
 
 def test_backend_get_user():
     backend = testing_backend()

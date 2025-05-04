@@ -123,7 +123,7 @@ class PreorderBackend:
         
     def __internal_get_users(self, cur: Cursor, original_order: bool = False) -> list[User]:
         # get all users
-        order = " order by staff desc, id asc" if not original_order else ""
+        order = " order by staff desc, name asc" if not original_order else ""
         res = cur.execute("select id, name, email, staff from users" + order)
         # fetch ALL of the results
         data = res.fetchall()
@@ -175,8 +175,7 @@ class PreorderBackend:
         
     def __internal_get_meals(self, cur: Cursor, original_order: bool = False) -> list[Meal]:
         # get all meals
-        order = " order by category asc, cast(name as integer) asc" if not original_order else ""
-        print(order)
+        order = " order by category asc, name" if not original_order else ""
         res = cur.execute("select * from meals" + order)
         # fetch ALL results in the result set
         data = res.fetchall()
