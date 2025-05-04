@@ -175,7 +175,7 @@ class PreorderBackend:
         
     def __internal_get_meals(self, cur: Cursor, original_order: bool = False) -> list[Meal]:
         # get all meals
-        order = " order by category asc, id desc" if not original_order else ""
+        order = " order by category asc, cast(name as integer) asc" if not original_order else ""
         print(order)
         res = cur.execute("select * from meals" + order)
         # fetch ALL results in the result set
@@ -307,7 +307,7 @@ class PreorderBackend:
         
     def __internal_get_orders(self, cur: Cursor, original_order: bool = False) -> list[Order]:
         # get all orders
-        order = " order by id desc" if not original_order else ""
+        order = " order by order_time desc" if not original_order else ""
         res = cur.execute("select id from orders" + order)
         # fetch all the results from the result set
         data: list[tuple[int]] = res.fetchall()
