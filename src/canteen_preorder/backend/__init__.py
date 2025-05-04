@@ -112,18 +112,19 @@ class PreorderBackend:
         return self.__user(data)
 
     # Staff Only
-    def get_users(self) -> list[User]:
+    def get_users(self, original_order: bool = False) -> list[User]:
         # open transaction
         cur = self.db.cursor()
-        users = self.__internal_get_users(cur)
+        users = self.__internal_get_users(cur, original_order)
         # commit transaction, function is read only, thus, safe
         self.db.commit()
         return users
 
         
-    def __internal_get_users(self, cur: Cursor) -> list[User]:
+    def __internal_get_users(self, cur: Cursor, original_order: bool = False) -> list[User]:
         # get all users
-        res = cur.execute("select id, name, email, staff from users")
+        order = " order by staff desc, id asc" if not original_order else ""
+        res = cur.execute("select id, name, email, staff from users" + order)
         # fetch ALL of the results
         data = res.fetchall()
         # go through all of the users in data, and assemble them into User objects
@@ -163,18 +164,20 @@ class PreorderBackend:
         # row is (id, name, cost, category, stock, available (1 if True, 0 if False))
         return Meal(row[0], row[1], row[2], Category(row[3]), row[4], row[5] > 0)
 
-    def get_meals(self) -> list[Meal]:
+    def get_meals(self, original_order: bool = False) -> list[Meal]:
         # open transaction
         cur = self.db.cursor()
-        meals = self.__internal_get_meals(cur)
+        meals = self.__internal_get_meals(cur, original_order)
         # commit transaction, function is read only, thus, safe
         self.db.commit()
         return meals
 
         
-    def __internal_get_meals(self, cur: Cursor) -> list[Meal]:
+    def __internal_get_meals(self, cur: Cursor, original_order: bool = False) -> list[Meal]:
         # get all meals
-        res = cur.execute("select * from meals")
+        order = " order by category asc, id desc" if not original_order else ""
+        print(order)
+        res = cur.execute("select * from meals" + order)
         # fetch ALL results in the result set
         data = res.fetchall()
         # go through all of the meals in data, and assemble them into Meal objects
@@ -294,17 +297,18 @@ class PreorderBackend:
         # row is (id, ordering user, order time)
         return Order(row[0], row[1], row[2], items)
 
-    def get_orders(self) -> list[Order]:
+    def get_orders(self, original_order: bool = False) -> list[Order]:
         # open transaction
         cur = self.db.cursor()
-        orders = self.__internal_get_orders(cur)
+        orders = self.__internal_get_orders(cur, original_order)
         # commit transaction, function is read only, thus, safe
         self.db.commit()
         return orders
         
-    def __internal_get_orders(self, cur: Cursor) -> list[Order]:
+    def __internal_get_orders(self, cur: Cursor, original_order: bool = False) -> list[Order]:
         # get all orders
-        res = cur.execute("select id from orders")
+        order = " order by id desc" if not original_order else ""
+        res = cur.execute("select id from orders" + order)
         # fetch all the results from the result set
         data: list[tuple[int]] = res.fetchall()
         # go through the all of the orders in data and assemble them into Order objects

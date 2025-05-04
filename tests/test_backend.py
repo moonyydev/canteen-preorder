@@ -86,7 +86,7 @@ def test_backend_create_meal_twice():
 def test_backend_get_meals():
     backend = testing_backend()
     meals = meal_testing_collection(backend)
-    assert meals == backend.get_meals()
+    assert meals == backend.get_meals(True)
 
 def test_backend_get_meal():
     backend = testing_backend()
@@ -194,7 +194,7 @@ def test_backend_get_orders():
     user_testing_collection(backend)
     meal_testing_collection(backend)
     orders = order_testing_collection(backend)
-    assert orders == backend.get_orders()
+    assert orders == backend.get_orders(True)
 
 def test_backend_get_order():
     backend = testing_backend()
@@ -238,15 +238,15 @@ def test_backend_create_order_atomicity():
 
     with pytest.raises(ConstraintError):
         backend.create_order(2, [(1, 1), (3, 82)])
-    assert backend.get_meals() == meals_expected
+    assert backend.get_meals(True) == meals_expected
 
     with pytest.raises(NotFoundError):
         backend.create_order(18, [(1, 1), (3, 1)])
-    assert backend.get_meals() == meals_expected
+    assert backend.get_meals(True) == meals_expected
 
     with pytest.raises(ConstraintError):
         backend.create_order(1, [(3, -2), (1, -15)])
-    assert backend.get_meals() == meals_expected
+    assert backend.get_meals(True) == meals_expected
 
 def test_backend_update_meal_atomicity():
     backend = testing_backend()
@@ -254,27 +254,27 @@ def test_backend_update_meal_atomicity():
 
     with pytest.raises(NotFoundError):
         backend.update_meal_cost(8, 310)
-    assert meals_expected == backend.get_meals()
+    assert meals_expected == backend.get_meals(True)
 
     with pytest.raises(NotFoundError):
         backend.update_meal_stock(9, 3)
-    assert meals_expected == backend.get_meals()
+    assert meals_expected == backend.get_meals(True)
     
     with pytest.raises(NotFoundError):
         backend.update_meal_availability(9)
-    assert meals_expected == backend.get_meals()
+    assert meals_expected == backend.get_meals(True)
 
     with pytest.raises(ConstraintError):
         backend.update_meal_cost(1, -50)
-    assert meals_expected == backend.get_meals()
+    assert meals_expected == backend.get_meals(True)
 
     with pytest.raises(ConstraintError):
         backend.update_meal_cost(2, 0)
-    assert meals_expected == backend.get_meals()
+    assert meals_expected == backend.get_meals(True)
 
     with pytest.raises(ConstraintError):
         backend.update_meal_stock(1, -9)
-    assert meals_expected == backend.get_meals()
+    assert meals_expected == backend.get_meals(True)
 
 def test_backend_order_total():
     backend = testing_backend()
