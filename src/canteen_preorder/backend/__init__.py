@@ -311,7 +311,7 @@ class PreorderBackend:
         
     def __internal_get_orders(self, cur: Cursor, original_order: bool = False) -> list[Order]:
         # get all orders
-        order = " order by order_time desc" if not original_order else ""
+        order = " order by order_time desc, id desc" if not original_order else ""
         res = cur.execute("select id from orders" + order)
         # fetch all the results from the result set
         data: list[tuple[int]] = res.fetchall()
