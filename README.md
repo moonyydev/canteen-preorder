@@ -75,6 +75,8 @@ All of the tests in the suite (as of 21:36 01/05/2025):
 
 `test_backend_get_nonexistant_user` - tests if a None is returned when you try to get a user that doesn't exist
 
+`test_backend_get_users_order` - tests if get_users has correct ordering (staff first, then alphabetically by name)
+
 `test_backend_create_meal` - tests if a meal is created correctly and its data is correct
 
 `test_backend_create_meal_twice` - tests if an AlreadyExistsError is thrown in case a meal with the same name already exists 
@@ -101,6 +103,8 @@ All of the tests in the suite (as of 21:36 01/05/2025):
 
 `test_backend_update_nonexistant_meal_availability` - tests if a NotFoundError is thrown when you try to edit the avaiability of a meal that doesn't exist
 
+`test_backend_get_meals_order` - tests if get_meals has correct ordering (category first, then alphabetically by name)
+
 `test_backend_create_order` - tests if an order is created correctly and its data is correct
 
 `test_backend_create_order_wrong_meal` - tests if a NotFoundError is thrown in case you try to create an order with a meal that doesn't exist
@@ -124,3 +128,5 @@ All of the tests in the suite (as of 21:36 01/05/2025):
 `test_backend_update_meal_atomicity` - tests if the database is corrupted in case any possible exceptions happen in the process of creating a meal
 
 `test_backend_order_total` - tests if the order's inline total is the same as the expected total
+
+`test_backend_get_orders_order` - tests if get_orders has correct ordering (reversed)
