@@ -56,7 +56,18 @@ class PreorderBackend:
         );
         """)
 
+        self.db.create_function("verify_argon", 2, self.__sqlite_verify_argon)
+
         self.db.commit()
+
+    def __sqlite_verify_argon(self, hash: str, password: str) -> int:
+        # verify may return a mismatch exception if the password is wrong
+        try:
+            # compared the stored hash with the password
+            self.hasher.verify(hash, password)
+            return 1
+        except argon2.exceptions.VerifyMismatchError:
+            return 0
 
     # USERS
     def login(self, email: str, password: str) -> Optional[User]:
@@ -71,20 +82,14 @@ class PreorderBackend:
     def __internal_login(self, cur: Cursor, email: str, password: str) -> Optional[User]:
         # find the user by email
         # password last so it can be excluded later by a simple splice index
-        res = cur.execute("select id, name, email, staff, password from users where email = ?", (email, ))
+        res = cur.execute("select id, name, email, staff from users where email = ? and verify_argon(password, ?) = 1", (email, password))
         # get ONE result from the result set
         data = res.fetchone()
         # if user isn't found, return None
         if data is None:
             return None
-        # verify may return a mismatch exception if the password is wrong
-        try:
-            # compared the stored hash with the password
-            self.hasher.verify(data[4], password)
-        except argon2.exceptions.VerifyMismatchError:
-            return None
         # assemble User object
-        return self.__user(data[0:4])
+        return self.__user(data)
 
 
     def __user(self, row: tuple[int, str, str, int]) -> User:
