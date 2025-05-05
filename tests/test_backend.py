@@ -60,6 +60,16 @@ def test_backend_get_nonexistant_user():
     user_testing_collection(backend)
     assert backend.get_user(11) is None
 
+def test_backend_get_users_order():
+    backend = testing_backend()
+    u1 = backend.create_user("user2", "2nduser@gmail.com", "somepassword", True)
+    u2 = backend.create_user("userthree", "userthethird@gmail.com", "wowpass", False)
+    u3 = backend.create_user("userV", "fifthuser@gmail.com", "unexpectedpassword", False)
+    u4 = backend.create_user("test_user", "test_user@gmail.com", "test123pass", True)
+
+    assert backend.get_users() == [u4, u1, u3, u2]
+
+
 def meal_testing_collection(backend: PreorderBackend) -> list[Meal]:
     meals: list[Meal] = []
     meals.append(backend.create_meal("Fruit Salad", 820, Category.SNACK, 2))
@@ -154,6 +164,15 @@ def test_backend_update_nonexistant_meal_availability():
     meal_testing_collection(backend)
     with pytest.raises(NotFoundError):
         backend.update_meal_availability(15, False)
+
+def test_backend_get_meals_order():
+    backend = testing_backend()
+    m1 = backend.create_meal("Chicken Sandwich", 670, Category.LUNCH, 1)
+    m2 = backend.create_meal("Fruit Salad", 820, Category.SNACK, 2)
+    m3 = backend.create_meal("Pancakes", 650, Category.BREAKFAST, 5)
+    m4 = backend.create_meal("Vegeterian Sandwich", 710, Category.LUNCH, 8)
+
+    assert backend.get_meals() == [m3, m1, m4, m2]
 
 def order_testing_collection(backend: PreorderBackend) -> list[Order]:
     users = [user.user_id for user in backend.get_users()]
@@ -284,3 +303,11 @@ def test_backend_order_total():
     order = backend.create_order(users[0].user_id, [(meals[0].meal_id, 1), (meals[1].meal_id, 3), (meals[3].meal_id, 2)])
     costs = [item[2] * item[1] for item in order.items]
     assert sum(costs) == total
+
+def test_backend_get_orders_order():
+    backend = testing_backend()
+    meal_testing_collection(backend)
+    user_testing_collection(backend)
+    orders = order_testing_collection(backend)
+    orders.reverse()
+    assert backend.get_orders() == orders
