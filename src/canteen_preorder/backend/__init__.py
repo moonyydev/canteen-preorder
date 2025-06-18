@@ -167,7 +167,7 @@ class PreorderBackend:
     # MEALS
     def __meal(self, row: tuple[int, str, int, int, int, int]) -> Meal:
         # row is (id, name, cost, category, stock, available (1 if True, 0 if False))
-        return Meal(row[0], row[1], row[2], Category(row[3]), row[4], row[5] > 0)
+        return Meal(row[0], row[1], row[2], Category(row[3]), row[4], row[5])
 
     def get_meals(self, original_order: bool = False) -> list[Meal]:
         # open transaction
